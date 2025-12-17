@@ -1,7 +1,7 @@
 ﻿using HtmlAgilityPack;
 using NuLigaCore.Data;
 
-namespace NuLigaCore
+namespace NuLigaViewer
 {
     public static class NuLigaParser
     {
