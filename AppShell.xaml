@@ -7,7 +7,7 @@
     Title="NuLigaViewer">
 
     <ShellContent
-        Title="Home"
+        Title="Verbandsrunde 2025/26"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 

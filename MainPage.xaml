@@ -9,21 +9,19 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <VerticalStackLayout Grid.Column="0">
-            <Label Text="Verbandsrunde 2025/26" FontSize="18" FontFamily="Bold"/>
-            <CollectionView ItemsSource="{Binding Leagues}"
-                     SelectedItem="{Binding SelectedLeague, Mode=TwoWay}" SelectionMode="Single">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Label Text="{Binding Name}"/>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
+        <CollectionView Grid.Column="0"
+                        ItemsSource="{Binding Leagues}"
+                        SelectedItem="{Binding SelectedLeague, Mode=TwoWay}"
+                        SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Label Text="{Binding Name}"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
@@ -49,12 +47,6 @@
             </Grid>
 
             <CollectionView Grid.Row="1"
-                      ItemsSource="{Binding GameDays}"
-                      SelectedItem="{Binding SelectedGameDay, Mode=TwoWay}"
-                      SelectionMode="Single">
-            </CollectionView>
-
-            <CollectionView Grid.Row="2"
                   ItemsSource="{Binding Teams}"
                   SelectedItem="{Binding SelectedTeamView, Mode=TwoWay}"
                   SelectionMode="Single">
