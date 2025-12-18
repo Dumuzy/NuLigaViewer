@@ -17,19 +17,19 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <HorizontalStackLayout Grid.Row="0" VerticalOptions="Center" Spacing="12">
+        <HorizontalStackLayout Grid.Row="0" VerticalOptions="Center">
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" VerticalOptions="Center" />
         </HorizontalStackLayout>
 		
-        <Grid Grid.Row="0" ColumnSpacing="8" Padding="6" BackgroundColor="{DynamicResource PageBackgroundColor}">
+        <Grid Grid.Row="0" ColumnSpacing="1" Padding="6" BackgroundColor="{DynamicResource PageBackgroundColor}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="80" />
-                <ColumnDefinition Width="80" />
-                <ColumnDefinition Width="80" />
-                <ColumnDefinition Width="80" />
-                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="40" />
             </Grid.ColumnDefinitions>
 
             <Label Grid.Column="0" Text="Rang" FontAttributes="Bold" VerticalTextAlignment="Center" />
@@ -48,19 +48,19 @@
                         SelectionChanged="OnTeamSelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Margin="6" Padding="6">
+                    <Border Margin="2" Padding="6">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8" />
                         </Border.StrokeShape>
-                        <Grid ColumnSpacing="8">
+                        <Grid ColumnSpacing="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="40" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="80" />
-                                <ColumnDefinition Width="80" />
-                                <ColumnDefinition Width="80" />
-                                <ColumnDefinition Width="80" />
-                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="40" />
                             </Grid.ColumnDefinitions>
 
                             <Label Grid.Column="0" Text="{Binding Rank}" VerticalTextAlignment="Center" />

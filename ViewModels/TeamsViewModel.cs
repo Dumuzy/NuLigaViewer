@@ -88,9 +88,9 @@ namespace NuLigaViewer.ViewModels
                     }
                 });
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // Consider logging or exposing an error property
+                System.Diagnostics.Debug.WriteLine(e.ToString());
             }
             finally
             {

@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using NuLigaCore.Data;
+using System.Globalization;
 
 namespace NuLigaViewer
 {
@@ -127,7 +128,7 @@ namespace NuLigaViewer
 
                 var gameDay = new GameDay
                 {
-                    Datum = DateTime.Parse(date),
+                    Datum = DateTime.ParseExact(date, "d", new CultureInfo("de-DE")),
                     Runde = int.Parse(round),
                     HeimMannschaft = homeTeam,
                     GastMannschaft = guestTeam,

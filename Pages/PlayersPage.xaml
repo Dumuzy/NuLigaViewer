@@ -10,13 +10,12 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" ColumnSpacing="8" Padding="6" VerticalOptions="Center">
+        <Grid Grid.Row="0" ColumnSpacing="1" Padding="6" VerticalOptions="Center">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="60" />
+                <ColumnDefinition Width="35" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="80" />
             </Grid.ColumnDefinitions>
 
             <Label Grid.Column="0" Text="Brett" FontAttributes="Bold" VerticalTextAlignment="Center" />
@@ -26,29 +25,25 @@
             <HorizontalStackLayout Grid.Column="3" BindableLayout.ItemsSource="{Binding RoundHeaders}" Spacing="6" VerticalOptions="Center">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate>
-                        <Label Text="{Binding .}" FontAttributes="Bold" HorizontalTextAlignment="Center" WidthRequest="36" />
+                        <Label Text="{Binding .}" FontAttributes="Bold" HorizontalTextAlignment="Center" WidthRequest="20" />
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>
             </HorizontalStackLayout>
-
-            <Label Grid.Column="4" Text="Total" FontAttributes="Bold" WidthRequest="80" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
         </Grid>
 
         <CollectionView Grid.Row="1" ItemsSource="{Binding PlayersRows}" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Margin="4" Padding="6">
+                    <Border Margin="2" Padding="6">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8" />
                         </Border.StrokeShape>
-                        <Grid ColumnSpacing="8" VerticalOptions="Center">
+                        <Grid ColumnSpacing="1" VerticalOptions="Center">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="60" />
+                                <ColumnDefinition Width="35" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="40" />
                                 <ColumnDefinition Width="Auto" />
-                                <!-- dynamic rounds -->
-                                <ColumnDefinition Width="80" />
                             </Grid.ColumnDefinitions>
 
                             <Label Grid.Column="0" Text="{Binding Brett}" VerticalTextAlignment="Center" />
@@ -58,12 +53,10 @@
                             <HorizontalStackLayout Grid.Column="3" BindableLayout.ItemsSource="{Binding Rounds}" Spacing="6" VerticalOptions="Center">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate>
-                                        <Label Text="{Binding .}" WidthRequest="36" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                        <Label Text="{Binding .}" WidthRequest="20" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </HorizontalStackLayout>
-
-                            <Label Grid.Column="4" Text="{Binding Total}" WidthRequest="80" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                         </Grid>
                     </Border>
                 </DataTemplate>

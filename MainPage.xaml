@@ -9,9 +9,9 @@
                     SelectionChanged="OnLeagueSelected">
         <CollectionView.ItemTemplate>
             <DataTemplate>
-                <Border Margin="6" Padding="6">
+                <Border Margin="2" Padding="6">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="8" />
+                        <RoundRectangle CornerRadius="10" />
                     </Border.StrokeShape>
                     <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" />
                 </Border>
