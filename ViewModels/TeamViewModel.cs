@@ -1,21 +1,18 @@
-using CsvHelper;
 using NuLigaCore.Data;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Text.Json;
-using System.Windows.Input;
 
 namespace NuLigaViewer.ViewModels
 {
     public class TeamViewModel : INotifyPropertyChanged
     {
         private readonly Team _team;
-        private DataTable? _playersTable;
 
         public TeamViewModel(Team team)
         {
             _team = team ?? throw new ArgumentNullException(nameof(team));
-            BuildPlayersTable();
+            BuildPlayersRows();
         }
 
         public int Rank => _team.Rang;
@@ -25,7 +22,8 @@ namespace NuLigaViewer.ViewModels
         public double BoardPointsSum => _team.BP;
         public double AverageDwz => _team.DWZ;
         public double BerlinTieBreak => _team.BW;
-        public DataView? PlayersTable => _playersTable?.DefaultView;
+        public ObservableCollection<PlayerRow> PlayersRows { get; } = new();
+        public IReadOnlyList<string> RoundHeaders { get; private set; } = Array.Empty<string>();
 
         public IEnumerable<Player> Players => _team.TeamPlayers ?? Enumerable.Empty<Player>();
         public IList<GameDay>? GameDays => _team.GameDays;
@@ -33,47 +31,30 @@ namespace NuLigaViewer.ViewModels
         public bool ContainsGameDay(GameDay gameDay) =>
             _team.GameDays != null && _team.GameDays.Contains(gameDay);
 
-        // Build DataTable with dynamic round columns (R1, R2, ...)
-        private void BuildPlayersTable()
+        private void BuildPlayersRows()
         {
-            _playersTable = new DataTable();
+            PlayersRows.Clear();
 
-            // fixed columns
-            _playersTable.Columns.Add("Brett", typeof(int));
-            _playersTable.Columns.Add("Spieler", typeof(string));
-            _playersTable.Columns.Add("DWZ", typeof(int));
-
-            // determine number of rounds from team.GameDays or first player's PointsPerGameDay
+            // determine number of rounds from team.GameDays or first player's PunkteProSpieltag length
             var rounds = _team.GameDays?.Count
                          ?? _team.TeamPlayers?.FirstOrDefault()?.PunkteProSpieltag?.Length
                          ?? 0;
 
-            for (var r = 1; r <= rounds; r++)
-            {
-                _playersTable.Columns.Add($"{r}", typeof(string));
-            }
-
-            _playersTable.Columns.Add("Total", typeof(string));
-
-            PopulatePlayersRows();
-        }
-
-        private void PopulatePlayersRows()
-        {
-            if (_playersTable == null) return;
-            _playersTable.Rows.Clear();
-
-            var rounds = _playersTable.Columns.Count - 4; // first 4 fixed columns
+            RoundHeaders = Enumerable.Range(1, Math.Max(0, rounds)).Select(i => i.ToString()).ToList();
 
             foreach (var p in _team.TeamPlayers ?? Enumerable.Empty<Player>())
             {
-                var row = _playersTable.NewRow();
-                row["Brett"] = p.Brett;
-                row["Spieler"] = p.Name ?? string.Empty;
-                row["DWZ"] = p.DWZ;
+                var row = new PlayerRow
+                {
+                    Brett = p.Brett,
+                    Spieler = p.Name ?? string.Empty,
+                    DWZ = p.DWZ,
+                    Rounds = new List<string>(),
+                };
 
                 var totalPoints = 0.0;
                 var totalGames = 0;
+
                 for (var i = 0; i < rounds; i++)
                 {
                     var pointsString = "-";
@@ -87,13 +68,17 @@ namespace NuLigaViewer.ViewModels
                             totalGames++;
                         }
                     }
-                    row[$"{i + 1}"] = pointsString;
+
+                    row.Rounds.Add(pointsString);
                 }
 
-                row["Total"] = totalPoints.ToString() + "/" + totalGames.ToString();
+                row.Total = $"{totalPoints}/{totalGames}";
 
-                _playersTable.Rows.Add(row);
+                PlayersRows.Add(row);
             }
+
+            OnPropertyChanged(nameof(RoundHeaders));
+            OnPropertyChanged(nameof(PlayersRows));
         }
 
         public void Refresh()
@@ -106,11 +91,20 @@ namespace NuLigaViewer.ViewModels
             OnPropertyChanged(nameof(AverageDwz));
             OnPropertyChanged(nameof(BerlinTieBreak));
 
-            PopulatePlayersRows();
+            BuildPlayersRows();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    public class PlayerRow
+    {
+        public int Brett { get; set; }
+        public string Spieler { get; set; } = string.Empty;
+        public int DWZ { get; set; }
+        public List<string> Rounds { get; set; } = new();
+        public string Total { get; set; } = string.Empty;
     }
 }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NuLigaViewer.PlayersPage"
+             Title="{Binding Name}">
+
+    <Grid Padding="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" ColumnSpacing="8" Padding="6" VerticalOptions="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="80" />
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0" Text="Brett" FontAttributes="Bold" VerticalTextAlignment="Center" />
+            <Label Grid.Column="1" Text="Spieler" FontAttributes="Bold" VerticalTextAlignment="Center" />
+            <Label Grid.Column="2" Text="DWZ" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+
+            <HorizontalStackLayout Grid.Column="3" BindableLayout.ItemsSource="{Binding RoundHeaders}" Spacing="6" VerticalOptions="Center">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding .}" FontAttributes="Bold" HorizontalTextAlignment="Center" WidthRequest="36" />
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </HorizontalStackLayout>
+
+            <Label Grid.Column="4" Text="Total" FontAttributes="Bold" WidthRequest="80" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+        </Grid>
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding PlayersRows}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="4" Padding="6">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Grid ColumnSpacing="8" VerticalOptions="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="60" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="Auto" />
+                                <!-- dynamic rounds -->
+                                <ColumnDefinition Width="80" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Text="{Binding Brett}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="1" Text="{Binding Spieler}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="2" Text="{Binding DWZ}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+
+                            <HorizontalStackLayout Grid.Column="3" BindableLayout.ItemsSource="{Binding Rounds}" Spacing="6" VerticalOptions="Center">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Text="{Binding .}" WidthRequest="36" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+
+                            <Label Grid.Column="4" Text="{Binding Total}" WidthRequest="80" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
