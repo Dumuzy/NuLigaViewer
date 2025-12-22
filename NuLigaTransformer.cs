@@ -1,4 +1,4 @@
-﻿using NuLigaCore.Data;
+﻿using NuLigaViewer.Data;
 
 namespace NuLigaViewer
 {

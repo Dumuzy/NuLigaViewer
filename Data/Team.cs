@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace NuLigaCore.Data
+namespace NuLigaViewer.Data
 {
     public class Team
     {

@@ -1,4 +1,4 @@
-namespace NuLigaCore.Data
+namespace NuLigaViewer.Data
 {
     public enum BoardPoints
     {

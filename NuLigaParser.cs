@@ -1,5 +1,5 @@
 ﻿using HtmlAgilityPack;
-using NuLigaCore.Data;
+using NuLigaViewer.Data;
 using System.Globalization;
 
 namespace NuLigaViewer

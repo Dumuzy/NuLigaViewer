@@ -1,4 +1,4 @@
-using NuLigaCore.Data;
+using NuLigaViewer.Data;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;

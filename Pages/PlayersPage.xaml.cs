@@ -1,6 +1,6 @@
 using NuLigaViewer.ViewModels;
 
-namespace NuLigaViewer
+namespace NuLigaViewer.Pages
 {
     public partial class PlayersPage : ContentPage
     {

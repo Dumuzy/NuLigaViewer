@@ -1,4 +1,4 @@
-using NuLigaCore.Data;
+using NuLigaViewer.Data;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -18,6 +18,7 @@ namespace NuLigaViewer.ViewModels
         }
 
         public ObservableCollection<TeamViewModel> Teams { get; } = new();
+        public ObservableCollection<GameDay> GameDays { get; } = new();
 
         public League League { get; }
 
@@ -78,6 +79,7 @@ namespace NuLigaViewer.ViewModels
                 IsLoading = true;
 
                 var teams = await Task.Run(() => NuLigaParser.ParseTeams(League.Url) ?? new System.Collections.Generic.List<Team>());
+                var lastGameDayReport = NuLigaTransformer.TransformTeamsToGameDayReport(teams);
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -85,6 +87,12 @@ namespace NuLigaViewer.ViewModels
                     foreach (var t in teams.Select(t => new TeamViewModel(t)))
                     {
                         Teams.Add(t);
+                    }
+
+                    GameDays.Clear();
+                    foreach (var gd in lastGameDayReport)
+                    {
+                        GameDays.Add(gd);
                     }
                 });
             }

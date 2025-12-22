@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="NuLigaViewer.TeamsPage"
+             x:Class="NuLigaViewer.Pages.TeamsPage"
              Title="{Binding League.Name}">
 
     <ContentPage.ToolbarItems>
@@ -14,6 +14,7 @@
     <Grid Padding="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -21,7 +22,7 @@
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" VerticalOptions="Center" />
         </HorizontalStackLayout>
 		
-        <Grid Grid.Row="0" ColumnSpacing="1" Padding="6" BackgroundColor="{DynamicResource PageBackgroundColor}">
+        <Grid Grid.Row="1" ColumnSpacing="1" Padding="6" BackgroundColor="{DynamicResource PageBackgroundColor}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*" />
@@ -41,8 +42,7 @@
             <Label Grid.Column="6" Text="BW" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
         </Grid>
 
-        <CollectionView Grid.Row="1"
-						x:Name="TeamsCollectionView"
+        <CollectionView Grid.Row="2"
                         ItemsSource="{Binding Teams}"
                         SelectionMode="Single"
                         SelectionChanged="OnTeamSelectionChanged">
@@ -64,7 +64,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Label Grid.Column="0" Text="{Binding Rank}" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="1" Text="{Binding Name}" FontSize="16" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="1" Text="{Binding Name}" VerticalTextAlignment="Center" />
                             <Label Grid.Column="2" Text="{Binding AverageDwz}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                             <Label Grid.Column="3" Text="{Binding Games}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                             <Label Grid.Column="4" Text="{Binding Points}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />

@@ -1,6 +1,6 @@
-using NuLigaCore.Data;
+using NuLigaViewer.Data;
 
-namespace NuLigaViewer
+namespace NuLigaViewer.Pages
 {
     public partial class TeamsPage : ContentPage, IQueryAttributable
     {
@@ -29,14 +29,7 @@ namespace NuLigaViewer
 
         async void OnBackButtonClicked(object? sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("..");
-        }
-
-        protected override bool OnBackButtonPressed()
-        {
-            MainThread.BeginInvokeOnMainThread(async () => await Shell.Current.GoToAsync(".."));
-
-            return true;
+            await Shell.Current.GoToAsync($"//MainPage");
         }
 
         async void OnTeamSelectionChanged(object? sender, SelectionChangedEventArgs e)

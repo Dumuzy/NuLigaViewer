@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using System;
-using Microsoft.Maui.Controls;
-
-namespace NuLigaViewer
+﻿namespace NuLigaViewer
 {
     public partial class MainPage : ContentPage
     {
@@ -16,13 +12,12 @@ namespace NuLigaViewer
 
         async void OnLeagueSelected(object sender, SelectionChangedEventArgs e)
         {
-            var league = e.CurrentSelection?.FirstOrDefault() as NuLigaCore.Data.League;
+            var league = (e.CurrentSelection?.FirstOrDefault() as Data.League);
             if (league == null)
             {
                 return;
             }
 
-            // clear selection to allow re-selection later
             if (sender is CollectionView cv)
             {
                 cv.SelectedItem = null;
@@ -31,8 +26,10 @@ namespace NuLigaViewer
             var url = Uri.EscapeDataString(league.Url ?? string.Empty);
             var name = Uri.EscapeDataString(league.Name ?? string.Empty);
 
-            // Navigate using Shell and pass league data via query parameters
-            await Shell.Current.GoToAsync($"{nameof(TeamsPage)}?leagueUrl={url}&leagueName={name}");
+            NavigationState.LastLeagueUrl = league.Url;
+            NavigationState.LastLeagueName = league.Name;
+
+            await Shell.Current.GoToAsync($"//Teams.Table?leagueUrl={url}&leagueName={name}");
         }
     }
 }
