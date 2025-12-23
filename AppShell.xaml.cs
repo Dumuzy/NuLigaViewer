@@ -8,8 +8,6 @@ namespace NuLigaViewer
         {
             InitializeComponent();
 
-            Routing.RegisterRoute(nameof(PlayersPage), typeof(PlayersPage));
-
             Navigated += AppShell_Navigated;
         }
 
@@ -21,8 +19,8 @@ namespace NuLigaViewer
                 if (string.IsNullOrEmpty(location))
                     return;
 
-                if (location.Contains("Teams", StringComparison.OrdinalIgnoreCase)
-                    && !location.Contains("leagueUrl=", StringComparison.OrdinalIgnoreCase)
+                if ((location.EndsWith("league/table", StringComparison.OrdinalIgnoreCase)
+                    || location.EndsWith("league/gameday", StringComparison.OrdinalIgnoreCase))
                     && !string.IsNullOrWhiteSpace(NavigationState.LastLeagueUrl))
                 {
                     var trimmed = location.TrimStart('/');

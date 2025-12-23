@@ -29,7 +29,7 @@
             NavigationState.LastLeagueUrl = league.Url;
             NavigationState.LastLeagueName = league.Name;
 
-            await Shell.Current.GoToAsync($"//Teams.Table?leagueUrl={url}&leagueName={name}");
+            await Shell.Current.GoToAsync($"//league/table?leagueUrl={url}&leagueName={name}");
         }
     }
 }

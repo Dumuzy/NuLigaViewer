@@ -5,20 +5,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:NuLigaViewer"
     xmlns:pages="using:NuLigaViewer.Pages"
-    Title="NuLigaViewer">
+    Title="NuLigaViewer"
+    FlyoutBehavior="Disabled">
 
     <ShellContent
-        Title="Verbandsrunde 2025/26"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-
-    <TabBar>
+            Title="Verbandsrunde 2025/26"
+            ContentTemplate="{DataTemplate local:MainPage}"
+            Route="home">
+    </ShellContent>
+    <TabBar Route="league">
         <ShellContent Title="Tabelle"
                           ContentTemplate="{DataTemplate pages:TeamsPage}"
-                          Route="Teams.Table" />
-
+                          Route="table" />
         <ShellContent Title="Aktueller Spieltag"
                           ContentTemplate="{DataTemplate pages:TeamsGameDay}"
-                          Route="Teams.GameDay" />
+                          Route="gameday" />
     </TabBar>
 </Shell>

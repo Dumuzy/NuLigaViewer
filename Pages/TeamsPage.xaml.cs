@@ -29,7 +29,7 @@ namespace NuLigaViewer.Pages
 
         async void OnBackButtonClicked(object? sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync($"//MainPage");
+            await Shell.Current.GoToAsync($"//home");
         }
 
         async void OnTeamSelectionChanged(object? sender, SelectionChangedEventArgs e)
