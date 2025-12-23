@@ -17,7 +17,7 @@
                           ContentTemplate="{DataTemplate pages:TeamsPage}"
                           Route="Teams.Table" />
 
-        <ShellContent Title="Spieltag"
+        <ShellContent Title="Aktueller Spieltag"
                           ContentTemplate="{DataTemplate pages:TeamsGameDay}"
                           Route="Teams.GameDay" />
     </TabBar>
