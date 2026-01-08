@@ -2,9 +2,9 @@ using NuLigaViewer.Data;
 
 namespace NuLigaViewer.Pages
 {
-    public partial class TeamsPage : ContentPage, IQueryAttributable
+    public partial class LeaguePage : ContentPage, IQueryAttributable
     {
-        public TeamsPage()
+        public LeaguePage()
         {
             InitializeComponent();
         }

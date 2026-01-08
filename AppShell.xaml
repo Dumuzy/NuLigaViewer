@@ -15,10 +15,10 @@
     </ShellContent>
     <TabBar Route="league">
         <ShellContent Title="Tabelle"
-                          ContentTemplate="{DataTemplate pages:TeamsPage}"
+                          ContentTemplate="{DataTemplate pages:LeaguePage}"
                           Route="table" />
         <ShellContent Title="Aktueller Spieltag"
-                          ContentTemplate="{DataTemplate pages:TeamsGameDay}"
+                          ContentTemplate="{DataTemplate pages:GameReportPage}"
                           Route="gameday" />
     </TabBar>
 </Shell>
