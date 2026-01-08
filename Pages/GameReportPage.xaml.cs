@@ -53,7 +53,16 @@ namespace NuLigaViewer.Pages
 
         async void OnTeamSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            // TODO
+            var selected = e.CurrentSelection.FirstOrDefault() as GameDay;
+            if (selected is null)
+                return;
+
+            await Navigation.PushAsync(new GameDayPage(selected));
+
+            if (sender is CollectionView cv)
+            {
+                cv.SelectedItem = null;
+            }
         }
     }
 }

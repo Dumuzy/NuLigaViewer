@@ -17,7 +17,7 @@
         <ShellContent Title="Tabelle"
                           ContentTemplate="{DataTemplate pages:LeaguePage}"
                           Route="table" />
-        <ShellContent Title="Aktueller Spieltag"
+        <ShellContent Title="Letzter Spieltag"
                           ContentTemplate="{DataTemplate pages:GameReportPage}"
                           Route="gameday" />
     </TabBar>
