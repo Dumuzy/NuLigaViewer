@@ -4,6 +4,7 @@ namespace NuLigaViewer.Data
     {
         public DateTime Datum { get; set; }
         public int Runde { get; set; }
+        public string Title => $"{Runde}. Spieltag am {Datum.ToShortDateString()}";
         public string? HeimMannschaft { get; set; }
         public double HeimMannschaftDWZ => (Report != null) ? Report.AverageHomeDWZ : 0;
         public string? GastMannschaft { get; set; }

@@ -12,7 +12,7 @@ namespace NuLigaViewer.ViewModels
         public TeamViewModel(Team team)
         {
             _team = team ?? throw new ArgumentNullException(nameof(team));
-            BuildPlayersRows();
+            BuildPlayerRows();
         }
 
         public int Rank => _team.Rang;
@@ -22,7 +22,7 @@ namespace NuLigaViewer.ViewModels
         public double BoardPointsSum => _team.BP;
         public double AverageDwz => _team.DWZ;
         public double BerlinTieBreak => _team.BW;
-        public ObservableCollection<PlayerRow> PlayersRows { get; } = new();
+        public ObservableCollection<PlayerRow> PlayerRows { get; } = new();
         public IReadOnlyList<string> RoundHeaders { get; private set; } = Array.Empty<string>();
 
         public IEnumerable<Player> Players => _team.TeamPlayers ?? Enumerable.Empty<Player>();
@@ -31,9 +31,9 @@ namespace NuLigaViewer.ViewModels
         public bool ContainsGameDay(GameDay gameDay) =>
             _team.GameDays != null && _team.GameDays.Contains(gameDay);
 
-        private void BuildPlayersRows()
+        private void BuildPlayerRows()
         {
-            PlayersRows.Clear();
+            PlayerRows.Clear();
 
             // determine number of rounds from team.GameDays or first player's PunkteProSpieltag length
             var rounds = _team.GameDays?.Count
@@ -49,7 +49,7 @@ namespace NuLigaViewer.ViewModels
                     Brett = p.Brett,
                     Spieler = p.Name ?? string.Empty,
                     DWZ = p.DWZ,
-                    Rounds = new List<string>(),
+                    Rounds = [],
                 };
 
                 var totalPoints = 0.0;
@@ -74,11 +74,11 @@ namespace NuLigaViewer.ViewModels
 
                 row.Total = $"{totalPoints}/{totalGames}";
 
-                PlayersRows.Add(row);
+                PlayerRows.Add(row);
             }
 
             OnPropertyChanged(nameof(RoundHeaders));
-            OnPropertyChanged(nameof(PlayersRows));
+            OnPropertyChanged(nameof(PlayerRows));
         }
 
         public void Refresh()
@@ -91,7 +91,7 @@ namespace NuLigaViewer.ViewModels
             OnPropertyChanged(nameof(AverageDwz));
             OnPropertyChanged(nameof(BerlinTieBreak));
 
-            BuildPlayersRows();
+            BuildPlayerRows();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
