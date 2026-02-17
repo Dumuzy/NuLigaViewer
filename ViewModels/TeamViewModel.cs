@@ -25,6 +25,20 @@ namespace NuLigaViewer.ViewModels
         public ObservableCollection<PlayerRow> PlayerRows { get; } = new();
         public IReadOnlyList<string> RoundHeaders { get; private set; } = Array.Empty<string>();
 
+        private Color _rowColor = Application.Current?.RequestedTheme == AppTheme.Dark ? Colors.White : Colors.Black;
+        public Color RowColor
+        {
+            get => _rowColor;
+            set
+            {
+                if (_rowColor != value)
+                {
+                    _rowColor = value;
+                    OnPropertyChanged(nameof(RowColor));
+                }
+            }
+        }
+
         public IEnumerable<Player> Players => _team.TeamPlayers ?? Enumerable.Empty<Player>();
         public IList<GameDay>? GameDays => _team.GameDays;
 

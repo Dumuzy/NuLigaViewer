@@ -81,12 +81,39 @@ namespace NuLigaViewer.ViewModels
                 var teams = await Task.Run(() => NuLigaParser.ParseTeams(League.Url) ?? new System.Collections.Generic.List<Team>());
                 var lastGameDayReport = NuLigaTransformer.TransformTeamsToGameDayReport(teams);
 
+                var vms = teams.Select(t => new TeamViewModel(t)).ToList();
+                vms.Sort((a, b) =>
+                {
+                    int pointsComparison = b.Points.CompareTo(a.Points);
+                    if (pointsComparison != 0)
+                    {
+                        return pointsComparison;
+                    }
+
+                    int bpComparison = b.BoardPointsSum.CompareTo(a.BoardPointsSum);
+                    if (bpComparison != 0)
+                    {
+                        return bpComparison;
+                    }
+                    return b.BerlinTieBreak.CompareTo(a.BerlinTieBreak);
+                });
+
+                if (vms.Count > 0)
+                {
+                    vms[0].RowColor = Colors.Green;
+
+                    for (int i = Math.Max(0, vms.Count - 2); i < vms.Count; i++)
+                    {
+                        vms[i].RowColor = Colors.Red;
+                    }
+                }
+
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Teams.Clear();
-                    foreach (var t in teams.Select(t => new TeamViewModel(t)))
+                    foreach (var vm in vms)
                     {
-                        Teams.Add(t);
+                        Teams.Add(vm);
                     }
 
                     GameDays.Clear();

@@ -63,13 +63,13 @@
                                 <ColumnDefinition Width="40" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Grid.Column="0" Text="{Binding Rank}" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="1" Text="{Binding Name}" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="2" Text="{Binding AverageDwz}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="3" Text="{Binding Games}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="4" Text="{Binding Points}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="5" Text="{Binding BoardPointsSum}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="6" Text="{Binding BerlinTieBreak}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="0" Text="{Binding Rank}" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />
+                            <Label Grid.Column="1" Text="{Binding Name}" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />
+                            <Label Grid.Column="2" Text="{Binding AverageDwz}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />
+                            <Label Grid.Column="3" Text="{Binding Games}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />
+                            <Label Grid.Column="4" Text="{Binding Points}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />
+                            <Label Grid.Column="5" Text="{Binding BoardPointsSum}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />
+                            <Label Grid.Column="6" Text="{Binding BerlinTieBreak}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />
                         </Grid>
                     </Border>
                 </DataTemplate>
