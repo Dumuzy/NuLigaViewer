@@ -8,7 +8,7 @@ namespace NuLigaViewer.Data
         public string VisibleHomeDWZ => HeimSpieler?.Contains("nicht anwesend") == true ? "" : HeimSpielerDWZ.ToString();
         public string? GastSpieler { get; set; }
         public int GastSpielerDWZ { get; set; }
-        public string VisibleGuestDWZ => HeimSpieler?.Contains("nicht anwesend") == true ? "" : HeimSpielerDWZ.ToString();
+        public string VisibleGuestDWZ => GastSpieler?.Contains("nicht anwesend") == true ? "" : GastSpielerDWZ.ToString();
         public string? Ergebnis { get; set; }
         public BoardPoints BoardPoints => Ergebnis?.AsBoardPoints() ?? BoardPoints.NotPlayed;
     }
