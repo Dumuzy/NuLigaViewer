@@ -15,6 +15,7 @@ namespace NuLigaViewer.ViewModels
             BuildPlayerRows();
         }
 
+        public int RankAfterSorting { get; set; }
         public int Rank => _team.Rang;
         public string Name => _team.Name;
         public int Games => _team.Spiele;

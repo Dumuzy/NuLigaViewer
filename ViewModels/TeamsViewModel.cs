@@ -111,9 +111,12 @@ namespace NuLigaViewer.ViewModels
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Teams.Clear();
+                    var index = 1;
                     foreach (var vm in vms)
                     {
+                        vm.RankAfterSorting = index;
                         Teams.Add(vm);
+                        index++;
                     }
 
                     GameDays.Clear();
