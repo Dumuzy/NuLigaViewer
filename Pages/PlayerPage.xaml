@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NuLigaViewer.Pages.PlayerPage"
+             Title="{Binding Spieler}">
+
+    <Grid Padding="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" ColumnSpacing="12" Padding="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                <Label Text="DWZ" FontSize="12" HorizontalTextAlignment="Center" Opacity="0.8" />
+                <Label Text="{Binding DWZ}" FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                <Label Text="Niveau" FontSize="12" HorizontalTextAlignment="Center" Opacity="0.8" />
+                <Label Text="{Binding AverageOpponentDWZ}" FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                <Label Text="Leistung" FontSize="12" HorizontalTextAlignment="Center" Opacity="0.8" />
+                <Label Text="{Binding Performance}" FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="3" Spacing="2" HorizontalOptions="Center">
+                <Label Text="Neue DWZ" FontSize="12" HorizontalTextAlignment="Center" Opacity="0.8" />
+                <Label Text="{Binding EstimatedDWZ}" FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnSpacing="1" Padding="6" VerticalOptions="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60" />
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="70" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0" Text="Spieltag" FontAttributes="Bold" VerticalTextAlignment="Center" />
+            <Label Grid.Column="1" Text="Datum" FontAttributes="Bold" VerticalTextAlignment="Center" />
+            <Label Grid.Column="2" Text="Brett" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+            <Label Grid.Column="3" Text="Gegner" FontAttributes="Bold" VerticalTextAlignment="Center" />
+            <Label Grid.Column="4" Text="DWZ" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+            <Label Grid.Column="5" Text="Ergebnis" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+            <Label Grid.Column="6" Text="Verein" FontAttributes="Bold" VerticalTextAlignment="Center" />
+        </Grid>
+
+        <CollectionView Grid.Row="2" ItemsSource="{Binding PlayerGameDayInfos}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="2" Padding="6">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Grid ColumnSpacing="1" VerticalOptions="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="60" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Text="{Binding Pairing.RelatedGameDay.Runde}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="1" Text="{Binding Pairing.RelatedGameDay.Datum, StringFormat='{0:dd.MM.yyyy}'}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="2" Text="{Binding Pairing.Brett}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="3" Text="{Binding Opponent}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="4" Text="{Binding OpponentDWZString}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="5" Text="{Binding ResultForPlayer}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="6" Text="{Binding OpponentTeam}" VerticalTextAlignment="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

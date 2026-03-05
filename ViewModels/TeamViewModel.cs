@@ -50,9 +50,9 @@ namespace NuLigaViewer.ViewModels
         {
             PlayerRows.Clear();
 
-            // determine number of rounds from team.GameDays or first player's PunkteProSpieltag length
+            // determine number of rounds from team.GameDays or first player's PairingsPerGameDay length
             var rounds = _team.GameDays?.Count
-                         ?? _team.TeamPlayers?.FirstOrDefault()?.PunkteProSpieltag?.Length
+                         ?? _team.TeamPlayers?.FirstOrDefault()?.PlayerInfoPerGameDay?.Length
                          ?? 0;
 
             RoundHeaders = Enumerable.Range(1, Math.Max(0, rounds)).Select(i => i.ToString()).ToList();
@@ -63,8 +63,9 @@ namespace NuLigaViewer.ViewModels
                 {
                     Brett = p.Brett,
                     Spieler = p.Name ?? string.Empty,
-                    DWZ = p.DWZ,
+                    DWZ = p.DWZ == 1000 ? null : p.DWZ,
                     Rounds = [],
+                    PlayerGameDayInfos = p.PlayerInfoPerGameDay?.Where(x => x != null).ToList() ?? []
                 };
 
                 var totalPoints = 0.0;
@@ -73,9 +74,9 @@ namespace NuLigaViewer.ViewModels
                 for (var i = 0; i < rounds; i++)
                 {
                     var pointsString = "-";
-                    if (p.PunkteProSpieltag != null && i < p.PunkteProSpieltag.Length)
+                    if (p.PlayerInfoPerGameDay != null && i < p.PlayerInfoPerGameDay.Length)
                     {
-                        var points = p.PunkteProSpieltag[i];
+                        var points = p.PlayerInfoPerGameDay[i]?.Points ?? -1;
                         pointsString = points == -1 ? "-" : (points == 1000 ? "+" : points.ToString());
                         if (points >= 0)
                         {
@@ -118,8 +119,15 @@ namespace NuLigaViewer.ViewModels
     {
         public int Brett { get; set; }
         public string Spieler { get; set; } = string.Empty;
-        public int DWZ { get; set; }
+        public int? DWZ { get; set; }
+        public int AverageOpponentDWZ => PlayerGameDayInfos.Count > 0 ? (int)Math.Round(PlayerGameDayInfos.Where(x => x != null).Average(x => x.OpponentDWZ ?? 0)) : 0;
+        public int? Performance => DWZ == null ? null : DWZ + (int)Math.Round((PointsSum - SumOfExpectedPoints) / GamesPlayed * 800);
+        public int GamesPlayed => PlayerGameDayInfos.Count(x => x != null && x.Points >= 0);
+        public double PointsSum => PlayerGameDayInfos.Where(x => x != null && x.Points >= 0).Sum(x => x.Points);
+        public double SumOfExpectedPoints => DWZ == null ? 0 : PlayerGameDayInfos.Where(x => x != null && x.Points >= 0).Sum(x => x.OpponentDWZ.HasValue ? (1 / (1 + Math.Pow(10, ((x.OpponentDWZ.Value - DWZ ?? 0) / 400.0)))) : 0);
+        public int? EstimatedDWZ => DWZ == null ? null : DWZ + (int)Math.Round((PointsSum - SumOfExpectedPoints) / (30 + GamesPlayed) * 800);
         public List<string> Rounds { get; set; } = new();
+        public List<PlayerGameDayInfo?> PlayerGameDayInfos { get; set; } = new();
         public string Total { get; set; } = string.Empty;
     }
 }

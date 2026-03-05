@@ -46,5 +46,31 @@ namespace NuLigaViewer.Data
                 _ => -1,
             };
         }
+
+        public static string AsString(this BoardPoints boardPoints, bool isHomeTeam)
+        {
+            if (!isHomeTeam)
+            {
+                return boardPoints switch
+                {
+                    BoardPoints.GuestWinByDefault => "+:-",
+                    BoardPoints.GuestWin => "1:0",
+                    BoardPoints.HomeWin => "0:1",
+                    BoardPoints.HomeWinByDefault => "-:+",
+                    BoardPoints.Draw => "1/2:1/2",
+                    _ => "-",
+                };
+            }
+
+            return boardPoints switch
+            {
+                BoardPoints.HomeWinByDefault => "+:-",
+                BoardPoints.HomeWin => "1:0",
+                BoardPoints.GuestWin => "0:1",
+                BoardPoints.GuestWinByDefault => "-:+",
+                BoardPoints.Draw => "1/2:1/2",
+                _ => "-",
+            };
+        }
     }
 }

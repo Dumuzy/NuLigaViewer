@@ -52,8 +52,12 @@ namespace NuLigaViewer.Data
             foreach (var player in TeamPlayers ?? Enumerable.Empty<Player>())
             {
                 var pairing = gameDay.Report.GetPairingForPlayer(player.Name, isHomeTeam);
+                if (pairing == null)
+                {
+                    continue;
+                }
                 var result = pairing?.BoardPoints.ToDouble(isHomeTeam) ?? -1;
-                player.PunkteProSpieltag?[gameDay.Runde - 1] = result;
+                player.PlayerInfoPerGameDay?[gameDay.Runde - 1] = new PlayerGameDayInfo { Pairing = pairing, PlayerIsInHomeTeam = isHomeTeam, Points = result };
             }
         }
 

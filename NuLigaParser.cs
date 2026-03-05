@@ -155,14 +155,14 @@ namespace NuLigaViewer
             {
                 var web = new HtmlWeb();
                 var doc = web.Load(gameDay.ReportUrl);
-                gameDay.Report = ParseGameReport(doc);
+                gameDay.Report = ParseGameReport(doc, gameDay);
 
                 gameDayReportLoaded(gameDay);
                 GameDayReportLoadedForGui?.Invoke(gameDay);
             });
         }
 
-        public static GameReport? ParseGameReport(HtmlDocument doc)
+        public static GameReport? ParseGameReport(HtmlDocument doc, GameDay gameDay)
         {
             var resultSetList = doc.DocumentNode.SelectNodes("//table[@class='result-set']");
             if (resultSetList == null || resultSetList.Count < 1)
@@ -193,7 +193,8 @@ namespace NuLigaViewer
                     HeimSpielerDWZ = int.Parse(string.IsNullOrEmpty(homePlayerDWZ) ? "1000" : homePlayerDWZ),
                     GastSpieler = cells[3].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' '),
                     GastSpielerDWZ = int.Parse(string.IsNullOrEmpty(guestPlayerDWZ) ? "1000" : guestPlayerDWZ),
-                    Ergebnis = cells[5].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' ')
+                    Ergebnis = cells[5].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' '),
+                    RelatedGameDay = gameDay
                 };
                 pairings.Add(pairing);
             }
@@ -229,9 +230,8 @@ namespace NuLigaViewer
                     Name = cells[1].InnerText.Trim().TrimStart('\n').TrimEnd('\n').Trim(),
                     DWZ = int.Parse(string.IsNullOrEmpty(cells[3].InnerText) ? "1000" : cells[3].InnerText),
                     Games = int.Parse(cells[4].InnerText),
-                    PunkteProSpieltag = new double[numberOfGameDays]
+                    PlayerInfoPerGameDay = new PlayerGameDayInfo[numberOfGameDays]
                 };
-                Array.Fill(player.PunkteProSpieltag, -1);
                 players.Add(player);
             }
 

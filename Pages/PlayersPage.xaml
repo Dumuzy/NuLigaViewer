@@ -31,7 +31,10 @@
             </HorizontalStackLayout>
         </Grid>
 
-        <CollectionView Grid.Row="1" ItemsSource="{Binding PlayerRows}" SelectionMode="None">
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding PlayerRows}"
+                        SelectionMode="Single"
+                        SelectionChanged="OnPlayerSelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border Margin="2" Padding="6">

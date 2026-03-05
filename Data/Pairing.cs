@@ -11,5 +11,6 @@ namespace NuLigaViewer.Data
         public string VisibleGuestDWZ => GastSpieler?.Contains("nicht anwesend") == true ? "" : GastSpielerDWZ.ToString();
         public string? Ergebnis { get; set; }
         public BoardPoints BoardPoints => Ergebnis?.AsBoardPoints() ?? BoardPoints.NotPlayed;
+        public GameDay? RelatedGameDay { get; set; }
     }
 }
