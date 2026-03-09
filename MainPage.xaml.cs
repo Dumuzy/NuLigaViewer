@@ -6,7 +6,14 @@
         {
             InitializeComponent();
 
-            var leagues = NuLigaParser.ParseLeagues();
+            List<Data.League>? leagues = null;
+
+            try
+            {
+                leagues = NuLigaParser.ParseLeagues();
+            }
+            catch { }
+
             BindingContext = new ViewModels.LeaguesViewModel(leagues);
         }
 

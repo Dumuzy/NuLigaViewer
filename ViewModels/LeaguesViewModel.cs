@@ -8,9 +8,9 @@ namespace NuLigaViewer.ViewModels
     {
         public ObservableCollection<League> Leagues { get; }
 
-        public LeaguesViewModel(IEnumerable<League> leagues)
+        public LeaguesViewModel(IEnumerable<League>? leagues)
         {
-            Leagues = new ObservableCollection<League>(leagues.Where(l => l is not null).ToList());
+            Leagues = new ObservableCollection<League>(leagues?.Where(l => l is not null).ToList() ?? Enumerable.Empty<League>());
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
