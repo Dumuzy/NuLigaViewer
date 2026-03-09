@@ -5,7 +5,7 @@
              Title="{Binding League.Name}">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Back"
+        <ToolbarItem Text="Zurück zur Übersicht"
                      Priority="0"
                      Order="Primary"
                      Clicked="OnBackButtonClicked" />
