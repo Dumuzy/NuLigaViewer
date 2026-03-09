@@ -20,7 +20,7 @@
             </Grid.ColumnDefinitions>
 
             <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
-                <Label Text="DWZ" FontSize="12" HorizontalTextAlignment="Center" Opacity="0.8" />
+                <Label Text="Alte DWZ" FontSize="12" HorizontalTextAlignment="Center" Opacity="0.8" />
                 <Label Text="{Binding DWZ}" FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
 
@@ -36,7 +36,7 @@
 
             <VerticalStackLayout Grid.Column="3" Spacing="2" HorizontalOptions="Center">
                 <Label Text="Neue DWZ" FontSize="12" HorizontalTextAlignment="Center" Opacity="0.8" />
-                <Label Text="{Binding EstimatedDWZ}" FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                <Label Text="{Binding EstimatedNewDwzString}" FontSize="16" FontAttributes="Bold" HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
         </Grid>
 

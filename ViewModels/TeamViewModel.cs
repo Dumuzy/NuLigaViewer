@@ -114,20 +114,4 @@ namespace NuLigaViewer.ViewModels
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
-    public class PlayerRow
-    {
-        public int Brett { get; set; }
-        public string Spieler { get; set; } = string.Empty;
-        public int? DWZ { get; set; }
-        public int AverageOpponentDWZ => PlayerGameDayInfos.Count > 0 ? (int)Math.Round(PlayerGameDayInfos.Where(x => x != null).Average(x => x.OpponentDWZ ?? 0)) : 0;
-        public int? Performance => DWZ == null ? null : DWZ + (int)Math.Round((PointsSum - SumOfExpectedPoints) / GamesPlayed * 800);
-        public int GamesPlayed => PlayerGameDayInfos.Count(x => x != null && x.Points >= 0);
-        public double PointsSum => PlayerGameDayInfos.Where(x => x != null && x.Points >= 0).Sum(x => x.Points);
-        public double SumOfExpectedPoints => DWZ == null ? 0 : PlayerGameDayInfos.Where(x => x != null && x.Points >= 0).Sum(x => x.OpponentDWZ.HasValue ? (1 / (1 + Math.Pow(10, ((x.OpponentDWZ.Value - DWZ ?? 0) / 400.0)))) : 0);
-        public int? EstimatedDWZ => DWZ == null ? null : DWZ + (int)Math.Round((PointsSum - SumOfExpectedPoints) / (30 + GamesPlayed) * 800);
-        public List<string> Rounds { get; set; } = new();
-        public List<PlayerGameDayInfo?> PlayerGameDayInfos { get; set; } = new();
-        public string Total { get; set; } = string.Empty;
-    }
 }
