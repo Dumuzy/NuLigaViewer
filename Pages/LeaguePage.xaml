@@ -18,9 +18,14 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <HorizontalStackLayout Grid.Row="0" VerticalOptions="Center">
-            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" VerticalOptions="Center" />
-        </HorizontalStackLayout>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ActivityIndicator Grid.Column="0" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" />
+            <Button Grid.Column="1" Text="Tabelle sortieren mit Berliner Wertung (BW)" Command="{Binding SortTeamsCommand}" />
+        </Grid>
 		
         <Grid Grid.Row="1" ColumnSpacing="1" Padding="6" BackgroundColor="{DynamicResource PageBackgroundColor}">
             <Grid.ColumnDefinitions>

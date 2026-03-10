@@ -20,7 +20,7 @@ namespace NuLigaViewer.ViewModels
         public double GastMannschaftDWZ => _gameDay.GastMannschaftDWZ;
         public string? HeimMannschaft => _gameDay.HeimMannschaft;
         public double HeimMannschaftDWZ => _gameDay.HeimMannschaftDWZ;
-        public string? Brettpunkte => _gameDay.BrettPunkte;
+        public string? BrettPunkte => _gameDay.BrettPunkte;
         public GameReport? Report => _gameDay.Report;
 
         public bool ContainsGameDay(GameDay gameDay) => gameDay == _gameDay;
@@ -34,7 +34,7 @@ namespace NuLigaViewer.ViewModels
             OnPropertyChanged(nameof(GastMannschaftDWZ));
             OnPropertyChanged(nameof(HeimMannschaft));
             OnPropertyChanged(nameof(HeimMannschaftDWZ));
-            OnPropertyChanged(nameof(Brettpunkte));
+            OnPropertyChanged(nameof(BrettPunkte));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

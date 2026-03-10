@@ -9,7 +9,7 @@
                     SelectionChanged="OnLeagueSelected" Margin="5,5,5,10">
         <CollectionView.ItemTemplate>
             <DataTemplate>
-                <Border Margin="2" Padding="6">
+                <Border Margin="2" Padding="5">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="10" />
                     </Border.StrokeShape>

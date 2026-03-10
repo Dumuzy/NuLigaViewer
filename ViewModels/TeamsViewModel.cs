@@ -2,6 +2,7 @@ using NuLigaViewer.Data;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace NuLigaViewer.ViewModels
 {
@@ -19,6 +20,9 @@ namespace NuLigaViewer.ViewModels
 
         public ObservableCollection<TeamViewModel> Teams { get; } = new();
         public ObservableCollection<GameDayViewModel> GameDays { get; } = new();
+
+        private readonly RelayCommand _sortTeamsCommand;
+        public ICommand SortTeamsCommand => _sortTeamsCommand;
 
         public League League { get; }
 
@@ -39,6 +43,8 @@ namespace NuLigaViewer.ViewModels
         public TeamsViewModel(League league)
         {
             League = league ?? throw new ArgumentNullException(nameof(league));
+
+            _sortTeamsCommand = new RelayCommand(SortTeamsAsync, () => Teams.Count > 0);
 
             NuLigaParser.GameDayReportLoadedForGui += NuLigaParser_GameDayReportLoaded;
 
@@ -114,6 +120,8 @@ namespace NuLigaViewer.ViewModels
                     {
                         GameDays.Add(new GameDayViewModel(gd));
                     }
+
+                    _sortTeamsCommand.RaiseCanExecuteChanged();
                 });
             }
             catch (Exception e)
@@ -124,6 +132,54 @@ namespace NuLigaViewer.ViewModels
             {
                 IsLoading = false;
             }
+        }
+
+        public async Task SortTeamsAsync()
+        {
+            var vms = Teams.Select(t => t).ToList();
+            vms.Sort((a, b) =>
+            {
+                int pointsComparison = b.Points.CompareTo(a.Points);
+                if (pointsComparison != 0)
+                {
+                    return pointsComparison;
+                }
+
+                int bpComparison = b.BoardPointsSum.CompareTo(a.BoardPointsSum);
+                if (bpComparison != 0)
+                {
+                    return bpComparison;
+                }
+                return b.BerlinTieBreak.CompareTo(a.BerlinTieBreak);
+            });
+
+            for (var i = 0; i < vms.Count; i++)
+            {
+                if (i == 0)
+                {
+                    vms[i].RowColor = Colors.Green;
+                }
+                else if (i >= Math.Max(0, vms.Count - 2))
+                {
+                    vms[i].RowColor = Colors.Red;
+                }
+                else
+                {
+                    vms[i].RowColor = Application.Current?.RequestedTheme == AppTheme.Dark ? Colors.White : Colors.Black;
+                }
+            }
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Teams.Clear();
+                var index = 1;
+                foreach (var vm in vms)
+                {
+                    vm.RankAfterSorting = index;
+                    Teams.Add(vm);
+                    index++;
+                }
+            });
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
