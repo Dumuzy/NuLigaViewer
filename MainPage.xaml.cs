@@ -12,7 +12,10 @@
             {
                 leagues = NuLigaParser.ParseLeagues();
             }
-            catch { }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.ToString());
+            }
 
             BindingContext = new ViewModels.LeaguesViewModel(leagues);
         }

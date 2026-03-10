@@ -4,9 +4,9 @@ namespace NuLigaViewer
 {
     public static class NuLigaTransformer
     {
-        public static List<GameDay> TransformTeamsToGameDayReport(List<Team> teams)
+        public static List<GameDay> TransformTeamsToGameDayReport(Team[] teams)
         {
-            if (teams.Count < 1)
+            if (teams.Length < 1)
             {
                 return [];
             }

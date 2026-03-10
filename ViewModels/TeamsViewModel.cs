@@ -18,7 +18,7 @@ namespace NuLigaViewer.ViewModels
         }
 
         public ObservableCollection<TeamViewModel> Teams { get; } = new();
-        public ObservableCollection<GameDay> GameDays { get; } = new();
+        public ObservableCollection<GameDayViewModel> GameDays { get; } = new();
 
         public League League { get; }
 
@@ -54,10 +54,16 @@ namespace NuLigaViewer.ViewModels
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                var vm = Teams.FirstOrDefault(t => t.ContainsGameDay(gameDay));
-                if (vm != null)
+                var teamViewModel = Teams.FirstOrDefault(t => t.ContainsGameDay(gameDay));
+                if (teamViewModel != null)
                 {
-                    vm.Refresh();
+                    teamViewModel.Refresh();
+                }
+
+                var gdViewModel = GameDays.FirstOrDefault(gd => gd.ContainsGameDay(gameDay));
+                if (gdViewModel != null)
+                {
+                    gdViewModel.Refresh();
                 }
             });
         }
@@ -78,7 +84,7 @@ namespace NuLigaViewer.ViewModels
             {
                 IsLoading = true;
 
-                var teams = await Task.Run(() => NuLigaParser.ParseTeams(League.Url) ?? new System.Collections.Generic.List<Team>());
+                var teams = await Task.Run(() => NuLigaParser.ParseTeams(League.Url) ?? []);
                 var lastGameDayReport = NuLigaTransformer.TransformTeamsToGameDayReport(teams);
 
                 var vms = teams.Select(t => new TeamViewModel(t)).ToList();
@@ -122,7 +128,7 @@ namespace NuLigaViewer.ViewModels
                     GameDays.Clear();
                     foreach (var gd in lastGameDayReport)
                     {
-                        GameDays.Add(gd);
+                        GameDays.Add(new GameDayViewModel(gd));
                     }
                 });
             }

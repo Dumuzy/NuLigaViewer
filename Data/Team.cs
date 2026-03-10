@@ -9,7 +9,7 @@ namespace NuLigaViewer.Data
         public double DWZ => (TeamPlayers != null && TeamPlayers.Count > 0) ? Math.Round(TeamPlayers.Average(x => x.DWZ)) : 0;
 
         [JsonIgnore]
-        public double[]? BoardPointsPerRank { get; set; }
+        public required double[] BoardPointsPerRank { get; set; }
         public int Spiele { get; set; }
         public int Punkte { get; set; }
         public double BP { get; set; }

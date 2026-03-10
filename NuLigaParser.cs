@@ -48,7 +48,7 @@ namespace NuLigaViewer
             return leagues;
         }
 
-        public static List<Team> ParseTeams(string url)
+        public static Team[] ParseTeams(string url)
         {
             var doc = web.Load(url);
             var crossTableList = doc.DocumentNode.SelectNodes("//table[@class='cross-table']");
@@ -57,49 +57,63 @@ namespace NuLigaViewer
                 return [];
             }
 
-            var teams = new List<Team>();
             var rankingTable = crossTableList[0];
             var rows = rankingTable.SelectNodes("tr");
             var numberOfTeams = rows.Count - 1; // BW Liga has 12 teams, others 10, KKC has 8 (+ header)
+            var teams = new Team[numberOfTeams];
 
             // start with 1, skip headers in 0
-            for (var row = 1; row < rows.Count; row++)
+            Parallel.For(1, rows.Count, row =>
             {
                 var cells = rows[row].SelectNodes("th|td");
-                var teamUrl = cells[2].QuerySelector("a").Attributes["href"].Value;
-
-                var newTeam = new Team
-                {
-                    Rang = int.Parse(cells[1].InnerText),
-                    Name = cells[2].InnerText,
-                    TeamUrl = string.IsNullOrEmpty(teamUrl) ? null : urlRoot + teamUrl,
-                    Spiele = int.Parse(cells[numberOfTeams + 3].InnerText),
-                    Punkte = int.Parse(cells[numberOfTeams + 4].InnerText),
-                    BP = double.Parse(cells[numberOfTeams + 5].InnerText),
-                    BoardPointsPerRank = new double[numberOfTeams - 1]
-                };
-
-                if (newTeam.TeamUrl != null)
-                {
-                    var teamDoc = web.Load(newTeam.TeamUrl);
-                    newTeam.GameDays = ParseGameDays(teamDoc, newTeam.GameDayReportLoaded);
-                    newTeam.TeamPlayers = ParsePlayers(teamDoc, newTeam.GameDays?.Count ?? numberOfTeams - 1);
-                }
-
-                var rankIndex = 0;
-                for (var i = 0; i < numberOfTeams; i++)
-                {
-                    if (row == i + 1)
-                    {
-                        continue;
-                    }
-                    var value = string.IsNullOrEmpty(cells[3 + i].InnerText) ? "0" : cells[3 + i].InnerText;
-                    newTeam.BoardPointsPerRank[rankIndex] = double.Parse(value);
-                    rankIndex++;
-                }
-                teams.Add(newTeam);
-            }
+                var newTeam = ParseTeam(cells, row, numberOfTeams);
+                teams[row - 1] = newTeam;
+            });
             return teams;
+        }
+
+        private static Team ParseTeam(HtmlNodeCollection cells, int row, int numberOfTeams)
+        {
+            var teamUrl = cells[2].QuerySelector("a").Attributes["href"].Value;
+
+            var newTeam = new Team
+            {
+                Rang = int.Parse(cells[1].InnerText),
+                Name = cells[2].InnerText,
+                TeamUrl = string.IsNullOrEmpty(teamUrl) ? null : urlRoot + teamUrl,
+                Spiele = int.Parse(cells[numberOfTeams + 3].InnerText),
+                Punkte = int.Parse(cells[numberOfTeams + 4].InnerText),
+                BP = double.Parse(cells[numberOfTeams + 5].InnerText),
+                BoardPointsPerRank = new double[numberOfTeams - 1]
+            };
+
+            ParseGameDaysAndPlayers(newTeam, numberOfTeams);
+
+            var rankIndex = 0;
+            for (var i = 0; i < numberOfTeams; i++)
+            {
+                if (row == i + 1)
+                {
+                    continue;
+                }
+                var value = string.IsNullOrEmpty(cells[3 + i].InnerText) ? "0" : cells[3 + i].InnerText;
+                newTeam.BoardPointsPerRank[rankIndex] = double.Parse(value);
+                rankIndex++;
+            }
+
+            return newTeam;
+        }
+
+        private static void ParseGameDaysAndPlayers(Team newTeam, int numberOfTeams)
+        {
+            if (newTeam.TeamUrl == null)
+            {
+                return;
+            }
+
+            var teamDoc = web.Load(newTeam.TeamUrl);
+            newTeam.GameDays = ParseGameDays(teamDoc, newTeam.GameDayReportLoaded);
+            newTeam.TeamPlayers = ParsePlayers(teamDoc, newTeam.GameDays?.Count ?? numberOfTeams - 1);
         }
 
         public static List<GameDay>? ParseGameDays(HtmlDocument doc, Action<GameDay> gameDayReportLoaded)
