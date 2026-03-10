@@ -22,10 +22,10 @@
             <Label Grid.Column="1" Text="Spieler" FontAttributes="Bold" VerticalTextAlignment="Center" />
             <Label Grid.Column="2" Text="DWZ" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
 
-            <HorizontalStackLayout Grid.Column="3" BindableLayout.ItemsSource="{Binding RoundHeaders}" Spacing="6" VerticalOptions="Center">
+            <HorizontalStackLayout Grid.Column="3" BindableLayout.ItemsSource="{Binding RoundHeaders}" Spacing="3" VerticalOptions="Center">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate>
-                        <Label Text="{Binding .}" FontAttributes="Bold" HorizontalTextAlignment="Center" WidthRequest="20" />
+                        <Label Text="{Binding .}" FontAttributes="Bold" HorizontalTextAlignment="Center" WidthRequest="17" />
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>
             </HorizontalStackLayout>
@@ -53,10 +53,10 @@
                             <Label Grid.Column="1" Text="{Binding Spieler}" VerticalTextAlignment="Center" />
                             <Label Grid.Column="2" Text="{Binding DWZ}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
 
-                            <HorizontalStackLayout Grid.Column="3" BindableLayout.ItemsSource="{Binding Rounds}" Spacing="6" VerticalOptions="Center">
+                            <HorizontalStackLayout Grid.Column="3" BindableLayout.ItemsSource="{Binding Rounds}" Spacing="3" VerticalOptions="Center">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate>
-                                        <Label Text="{Binding .}" WidthRequest="20" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                        <Label Text="{Binding .}" FontSize="12" WidthRequest="17" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </HorizontalStackLayout>
