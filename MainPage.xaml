@@ -6,7 +6,7 @@
 
     <CollectionView ItemsSource="{Binding Leagues}"
                     SelectionMode="Single"
-                    SelectionChanged="OnLeagueSelected">
+                    SelectionChanged="OnLeagueSelected" Margin="5,5,5,10">
         <CollectionView.ItemTemplate>
             <DataTemplate>
                 <Border Margin="2" Padding="6">
