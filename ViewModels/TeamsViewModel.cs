@@ -88,22 +88,6 @@ namespace NuLigaViewer.ViewModels
                 var lastGameDayReport = NuLigaTransformer.TransformTeamsToGameDayReport(teams);
 
                 var vms = teams.Select(t => new TeamViewModel(t)).ToList();
-                vms.Sort((a, b) =>
-                {
-                    int pointsComparison = b.Points.CompareTo(a.Points);
-                    if (pointsComparison != 0)
-                    {
-                        return pointsComparison;
-                    }
-
-                    int bpComparison = b.BoardPointsSum.CompareTo(a.BoardPointsSum);
-                    if (bpComparison != 0)
-                    {
-                        return bpComparison;
-                    }
-                    return b.BerlinTieBreak.CompareTo(a.BerlinTieBreak);
-                });
-
                 if (vms.Count > 0)
                 {
                     vms[0].RowColor = Colors.Green;
