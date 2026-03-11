@@ -56,7 +56,7 @@ namespace NuLigaViewer.Data
                 {
                     continue;
                 }
-                var result = pairing?.BoardPoints.ToDouble(isHomeTeam) ?? -1;
+                var result = pairing.BoardPoints.ToDouble(isHomeTeam);
                 player.PlayerInfoPerGameDay?[gameDay.Runde - 1] = new PlayerGameDayInfo { Pairing = pairing, PlayerIsInHomeTeam = isHomeTeam, Points = result };
             }
         }

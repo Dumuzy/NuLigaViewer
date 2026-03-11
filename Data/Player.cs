@@ -21,7 +21,7 @@ namespace NuLigaViewer.Data
 
     public class PlayerGameDayInfo
     {
-        public Pairing? Pairing { get; set; }
+        public required Pairing Pairing { get; set; }
         public double Points { get; set; } = -1;
         public bool PlayerIsInHomeTeam { get; set; }
         public string? ResultForPlayer => Pairing?.BoardPoints.AsString(PlayerIsInHomeTeam);
