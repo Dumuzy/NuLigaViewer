@@ -8,11 +8,11 @@ namespace NuLigaViewer.Data
         public double AverageHomeDWZ => RegularPairings.Any() ? Math.Round(RegularPairings.Average(x => x.HeimSpielerDWZ)) : 0;
         public double AverageGuestDWZ => RegularPairings.Any() ? Math.Round(RegularPairings.Average(x => x.GastSpielerDWZ)) : 0;
 
-        public Pairing? GetPairingForPlayer(string? playerName, bool forHomeTeam)
+        public IEnumerable<Pairing> GetPairingForPlayer(string? playerName, bool forHomeTeam)
         {
             return forHomeTeam
-                ? Pairings.FirstOrDefault(p => p.HeimSpieler == playerName)
-                : Pairings.FirstOrDefault(p => p.GastSpieler == playerName);
+                ? Pairings.Where(p => p.HeimSpieler == playerName)
+                : Pairings.Where(p => p.GastSpieler == playerName);
         }
 
         public double ComputeBw(bool forHomeTeam)

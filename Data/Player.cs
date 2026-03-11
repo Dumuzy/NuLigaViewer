@@ -22,12 +22,21 @@ namespace NuLigaViewer.Data
     public class PlayerGameDayInfo
     {
         public required Pairing Pairing { get; set; }
-        public double Points { get; set; } = -1;
+        public double Points => Pairing.BoardPoints.ToDouble(PlayerIsInHomeTeam);
         public bool PlayerIsInHomeTeam { get; set; }
+
         public string? ResultForPlayer => Pairing?.BoardPoints.AsString(PlayerIsInHomeTeam);
         public string? Opponent => PlayerIsInHomeTeam ? Pairing?.GastSpieler : Pairing?.HeimSpieler;
         public int? OpponentDWZ => PlayerIsInHomeTeam ? Pairing?.GastSpielerDWZ : Pairing?.HeimSpielerDWZ;
         public string? OpponentDWZString => PlayerIsInHomeTeam ? Pairing?.VisibleGuestDWZ : Pairing?.VisibleHomeDWZ;
         public string? OpponentTeam => PlayerIsInHomeTeam ? Pairing?.RelatedGameDay?.GastMannschaft : Pairing?.RelatedGameDay?.HeimMannschaft;
+
+        public Pairing? SecondPairing { get; set; }
+        public bool SecExists => SecondPairing != null;
+        public string? SecResultForPlayer => SecondPairing?.BoardPoints.AsString(PlayerIsInHomeTeam);
+        public string? SecOpponent => PlayerIsInHomeTeam ? SecondPairing?.GastSpieler : SecondPairing?.HeimSpieler;
+        public int? SecOpponentDWZ => PlayerIsInHomeTeam ? SecondPairing?.GastSpielerDWZ : SecondPairing?.HeimSpielerDWZ;
+        public string? SecOpponentDWZString => PlayerIsInHomeTeam ? SecondPairing?.VisibleGuestDWZ : SecondPairing?.VisibleHomeDWZ;
+        public string? SecOpponentTeam => PlayerIsInHomeTeam ? SecondPairing?.RelatedGameDay?.GastMannschaft : SecondPairing?.RelatedGameDay?.HeimMannschaft;
     }
 }

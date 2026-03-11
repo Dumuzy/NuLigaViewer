@@ -10,7 +10,7 @@ namespace NuLigaViewer.ViewModels
         public int? DWZ { get; set; }
         public List<string> Rounds { get; set; } = new();
         public List<PlayerGameDayInfo?> PlayerGameDayInfos { get; set; } = new();
-        public IEnumerable<PlayerGameDayInfo> RegularGameDayInfos => PlayerGameDayInfos.Where(x => x != null && x.Pairing.BoardPoints.IsRegularResult()).Select(x => x!);
+        public IEnumerable<PlayerGameDayInfo> RegularGameDayInfos => PlayerGameDayInfos.Where(x => x != null && x.Pairing.BoardPoints.IsRegularResult() && !x.SecExists).Select(x => x!);
         public string Total { get; set; } = string.Empty;
 
         public int AverageOpponentDWZ => RegularGameDayInfos.Count() > 0 ? (int)Math.Round(RegularGameDayInfos.Average(x => x!.OpponentDWZ ?? 0)) : 0;
@@ -18,8 +18,8 @@ namespace NuLigaViewer.ViewModels
         public double PointsSum => RegularGameDayInfos.Sum(x => x.Points);
         public double SumOfExpectedPoints => DWZ == null ? 0 : RegularGameDayInfos.Sum(x => x.OpponentDWZ.HasValue ? PofD(DWZ.Value - x.OpponentDWZ.Value) : 0);
         public int Entwicklungskoeffizient => ComputeEntwicklungskoeffizient();
-        public int? Performance => DWZ == null ? null : DWZ + (int)Math.Round((PointsSum - SumOfExpectedPoints) * 800.0 / (double)GamesPlayed);
-        public int? EstimatedNewDWZ => DWZ == null ? null : DWZ + (int)Math.Round((PointsSum - SumOfExpectedPoints) / (Entwicklungskoeffizient + GamesPlayed) * 800);
+        public int? Performance => (DWZ == null || GamesPlayed == 0) ? null : DWZ + (int)Math.Round((PointsSum - SumOfExpectedPoints) * 800.0 / (double)GamesPlayed);
+        public int? EstimatedNewDWZ => (DWZ == null || GamesPlayed == 0) ? null : DWZ + (int)Math.Round((PointsSum - SumOfExpectedPoints) / (Entwicklungskoeffizient + GamesPlayed) * 800);
         public string? RatingDifference => (EstimatedNewDWZ - DWZ) > 0 ? "+" + (EstimatedNewDWZ - DWZ) : (EstimatedNewDWZ - DWZ).ToString();
         public string EstimatedNewDwzString => $"{EstimatedNewDWZ} ({RatingDifference})";
 

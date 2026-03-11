@@ -51,13 +51,17 @@ namespace NuLigaViewer.Data
 
             foreach (var player in TeamPlayers ?? Enumerable.Empty<Player>())
             {
-                var pairing = gameDay.Report.GetPairingForPlayer(player.Name, isHomeTeam);
-                if (pairing == null)
+                var pairings = gameDay.Report.GetPairingForPlayer(player.Name, isHomeTeam);
+                if (!pairings.Any())
                 {
                     continue;
                 }
-                var result = pairing.BoardPoints.ToDouble(isHomeTeam);
-                player.PlayerInfoPerGameDay?[gameDay.Runde - 1] = new PlayerGameDayInfo { Pairing = pairing, PlayerIsInHomeTeam = isHomeTeam, Points = result };
+                player.PlayerInfoPerGameDay?[gameDay.Runde - 1] = new PlayerGameDayInfo
+                {
+                    Pairing = pairings.First(),
+                    SecondPairing = pairings.Count() > 1 ? pairings.Last() : null,
+                    PlayerIsInHomeTeam = isHomeTeam
+                };
             }
         }
 

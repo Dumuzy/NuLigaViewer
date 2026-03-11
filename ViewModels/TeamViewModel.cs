@@ -78,6 +78,19 @@ namespace NuLigaViewer.ViewModels
                     {
                         var points = p.PlayerInfoPerGameDay[i]?.Points ?? -1;
                         pointsString = points == -1 ? "-" : (points == 1000 ? "+" : points.ToString());
+                        if (p.PlayerInfoPerGameDay[i]?.SecondPairing != null)
+                        {
+                            var secondPoints = p.PlayerInfoPerGameDay[i]!.SecondPairing!.BoardPoints.ToDouble(p.PlayerInfoPerGameDay[i]!.PlayerIsInHomeTeam);
+                            if (secondPoints != -1)
+                            {
+                                pointsString += $" / {(secondPoints == 1000 ? "+" : secondPoints.ToString())}";
+                                if (secondPoints >= 0)
+                                {
+                                    totalPoints += (secondPoints == 1000 ? 1 : secondPoints);
+                                    totalGames++;
+                                }
+                            }
+                        }
                         if (points >= 0)
                         {
                             totalPoints += (points == 1000 ? 1 : points);
