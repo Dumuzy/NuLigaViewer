@@ -20,6 +20,7 @@ namespace NuLigaViewer.ViewModels
 
         public ObservableCollection<TeamViewModel> Teams { get; } = new();
         public ObservableCollection<GameDayViewModel> GameDays { get; } = new();
+        public ObservableCollection<TopTenPlayerViewModel> TopTenPlayer { get; } = new();
 
         private readonly RelayCommand _sortTeamsCommand;
         public ICommand SortTeamsCommand => _sortTeamsCommand;
@@ -91,7 +92,8 @@ namespace NuLigaViewer.ViewModels
                 IsLoading = true;
 
                 var teams = await Task.Run(() => NuLigaParser.ParseTeams(League.Url) ?? []);
-                var lastGameDayReport = NuLigaTransformer.TransformTeamsToGameDayReport(teams);
+                var lastGameDayReport = NuLigaTransformer.TransformTeamsToLastGameDayReport(teams);
+                var allPlayers = NuLigaTransformer.TransformTeamsToAllPlayerList(teams);
 
                 var vms = teams.Select(t => new TeamViewModel(t)).ToList();
                 if (vms.Count > 0)
@@ -119,6 +121,18 @@ namespace NuLigaViewer.ViewModels
                     foreach (var gd in lastGameDayReport)
                     {
                         GameDays.Add(new GameDayViewModel(gd));
+                    }
+
+                    TopTenPlayer.Clear();
+                    var rang = 1;
+                    foreach (var player in allPlayers.Take(10))
+                    {
+                        var ttpVm = new TopTenPlayerViewModel(player)
+                        {
+                            Rang = rang
+                        };
+                        TopTenPlayer.Add(ttpVm);
+                        rang++;
                     }
 
                     _sortTeamsCommand.RaiseCanExecuteChanged();

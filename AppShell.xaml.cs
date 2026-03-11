@@ -1,6 +1,4 @@
-﻿using NuLigaViewer.Pages;
-
-namespace NuLigaViewer
+﻿namespace NuLigaViewer
 {
     public partial class AppShell : Shell
     {
@@ -20,7 +18,8 @@ namespace NuLigaViewer
                     return;
 
                 if ((location.EndsWith("league/table", StringComparison.OrdinalIgnoreCase)
-                    || location.EndsWith("league/gameday", StringComparison.OrdinalIgnoreCase))
+                    || location.EndsWith("league/gameday", StringComparison.OrdinalIgnoreCase)
+                    || location.EndsWith("league/topten", StringComparison.OrdinalIgnoreCase))
                     && !string.IsNullOrWhiteSpace(NavigationState.LastLeagueUrl))
                 {
                     var trimmed = location.TrimStart('/');

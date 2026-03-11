@@ -113,7 +113,7 @@ namespace NuLigaViewer
 
             var teamDoc = web.Load(newTeam.TeamUrl);
             newTeam.GameDays = ParseGameDays(teamDoc, newTeam.GameDayReportLoaded);
-            newTeam.TeamPlayers = ParsePlayers(teamDoc, newTeam.GameDays?.Count ?? numberOfTeams - 1);
+            newTeam.TeamPlayers = ParsePlayers(teamDoc, newTeam.Name, newTeam.GameDays?.Count ?? numberOfTeams - 1);
         }
 
         public static List<GameDay>? ParseGameDays(HtmlDocument doc, Action<GameDay> gameDayReportLoaded)
@@ -216,7 +216,7 @@ namespace NuLigaViewer
             return new GameReport { Pairings = pairings };
         }
 
-        public static List<Player>? ParsePlayers(HtmlDocument doc, int numberOfGameDays)
+        public static List<Player>? ParsePlayers(HtmlDocument doc, string teamName, int numberOfGameDays)
         {
             var resultSetList = doc.DocumentNode.SelectNodes("//table[@class='result-set']");
             if (resultSetList == null || resultSetList.Count < 3)
@@ -244,6 +244,8 @@ namespace NuLigaViewer
                     Name = cells[1].InnerText.Trim().TrimStart('\n').TrimEnd('\n').Trim(),
                     DWZ = int.Parse(string.IsNullOrEmpty(cells[3].InnerText) ? "1000" : cells[3].InnerText),
                     Games = int.Parse(cells[4].InnerText),
+                    BoardPoints = cells[5].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' '),
+                    TeamName = teamName,
                     PlayerInfoPerGameDay = new PlayerGameDayInfo[numberOfGameDays]
                 };
                 players.Add(player);

@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace NuLigaViewer.Data
 {
     public class Player
@@ -8,8 +6,10 @@ namespace NuLigaViewer.Data
         public string? Name { get; set; }
         public int DWZ { get; set; }
 
-        [JsonIgnore]
         public int Games { get; set; }
+        public string? BoardPoints { get; set; }
+        public string? TeamName { get; set; }
+        public double Points => BoardPoints?.ToPoints() ?? 0.0;
 
         public PlayerGameDayInfo?[]? PlayerInfoPerGameDay { get; set; }
 

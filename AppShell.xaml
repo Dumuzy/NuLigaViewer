@@ -20,5 +20,8 @@
         <ShellContent Title="Letzter Spieltag"
                           ContentTemplate="{DataTemplate pages:GameReportPage}"
                           Route="gameday" />
+        <ShellContent Title="Top 10"
+                          ContentTemplate="{DataTemplate pages:TopTen}"
+                          Route="topten" />
     </TabBar>
 </Shell>

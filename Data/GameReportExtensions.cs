@@ -16,6 +16,22 @@ namespace NuLigaViewer.Data
             };
         }
 
+        public static double ToPoints(this string bp)
+        {
+            var index = bp.IndexOf(':');
+            if (index == -1)
+            {
+                return 0;
+            }
+            bp = bp.Substring(0, index);
+
+            if (double.TryParse(bp, out double result))
+            {
+                return result;
+            }
+            return 0;
+        }
+
         public static bool IsRegularResult(this BoardPoints bp)
         {
             return bp != BoardPoints.NotPlayed && bp != BoardPoints.GuestWinByDefault && bp != BoardPoints.HomeWinByDefault;

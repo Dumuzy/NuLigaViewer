@@ -4,7 +4,7 @@ namespace NuLigaViewer
 {
     public static class NuLigaTransformer
     {
-        public static List<GameDay> TransformTeamsToGameDayReport(Team[] teams)
+        public static List<GameDay> TransformTeamsToLastGameDayReport(Team[] teams)
         {
             if (teams.Length < 1)
             {
@@ -28,6 +28,27 @@ namespace NuLigaViewer
             }
 
             return currentGameDayReport;
+        }
+
+        public static List<Player> TransformTeamsToAllPlayerList(Team[] teams)
+        {
+            if (teams.Length < 1)
+            {
+                return [];
+            }
+
+            var allPlayers = teams.Where(x => x.TeamPlayers != null).SelectMany(x => x.TeamPlayers!).ToList();
+            allPlayers.Sort((a, b) =>
+            {
+                int pointsComparison = b.Points.CompareTo(a.Points);
+                if (pointsComparison != 0)
+                {
+                    return pointsComparison;
+                }
+                return a.Games.CompareTo(b.Games);
+            });
+
+            return allPlayers;
         }
     }
 }
