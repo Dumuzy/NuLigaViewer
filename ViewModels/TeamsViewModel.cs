@@ -19,7 +19,9 @@ namespace NuLigaViewer.ViewModels
         }
 
         public ObservableCollection<TeamViewModel> Teams { get; } = new();
-        public ObservableCollection<GameDayViewModel> GameDays { get; } = new();
+        public ObservableCollection<GameDayViewModel> LastGameDayReport { get; } = new();
+        public string? LastGameTitle => LastGameDayReport.Any() ? LastGameDayReport.First().Title : null;
+
         public ObservableCollection<TopTenPlayerViewModel> TopTenPlayer { get; } = new();
 
         private readonly RelayCommand _sortTeamsCommand;
@@ -67,7 +69,7 @@ namespace NuLigaViewer.ViewModels
                     teamViewModel.Refresh();
                 }
 
-                var gdViewModel = GameDays.FirstOrDefault(gd => gd.ContainsGameDay(gameDay));
+                var gdViewModel = LastGameDayReport.FirstOrDefault(gd => gd.ContainsGameDay(gameDay));
                 if (gdViewModel != null)
                 {
                     gdViewModel.Refresh();
@@ -117,10 +119,10 @@ namespace NuLigaViewer.ViewModels
                         index++;
                     }
 
-                    GameDays.Clear();
+                    LastGameDayReport.Clear();
                     foreach (var gd in lastGameDayReport)
                     {
-                        GameDays.Add(new GameDayViewModel(gd));
+                        LastGameDayReport.Add(new GameDayViewModel(gd));
                     }
 
                     TopTenPlayer.Clear();
@@ -135,6 +137,7 @@ namespace NuLigaViewer.ViewModels
                         rang++;
                     }
 
+                    OnPropertyChanged(nameof(LastGameTitle));
                     _sortTeamsCommand.RaiseCanExecuteChanged();
                 });
             }

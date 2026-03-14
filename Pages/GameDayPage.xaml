@@ -12,9 +12,9 @@
 
         <Grid Grid.Row="0" ColumnSpacing="1" Padding="6" VerticalOptions="Center">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="35" />
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="50" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="40" />
@@ -22,10 +22,10 @@
 
             <Label Grid.Column="0" Text="Brett" FontAttributes="Bold" VerticalTextAlignment="Center" />
             <Label Grid.Column="1" Text="{Binding HeimMannschaft}" FontAttributes="Bold" VerticalTextAlignment="Center" />
-            <Label Grid.Column="2" Text="DWZ" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+            <Label Grid.Column="2" Text="DWZ" FontAttributes="Bold" VerticalTextAlignment="Center" />
             <Label Grid.Column="3" Text="{Binding GastMannschaft}" FontAttributes="Bold" VerticalTextAlignment="Center" />
-            <Label Grid.Column="4" Text="DWZ" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-            <Label Grid.Column="5" Text="Ergebnis" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+            <Label Grid.Column="4" Text="DWZ" FontAttributes="Bold" VerticalTextAlignment="Center" />
+            <Label Grid.Column="5" Text="Erg." FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
         </Grid>
 
         <CollectionView Grid.Row="1" ItemsSource="{Binding Report.Pairings}" SelectionMode="None">
@@ -37,9 +37,9 @@
                         </Border.StrokeShape>
                         <Grid ColumnSpacing="1" VerticalOptions="Center">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="35" />
-                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="50" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="40" />
                                 <ColumnDefinition Width="40" />
@@ -47,9 +47,9 @@
 
                             <Label Grid.Column="0" Text="{Binding Brett}" VerticalTextAlignment="Center" />
                             <Label Grid.Column="1" Text="{Binding HeimSpieler}" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="2" Text="{Binding VisibleHomeDWZ}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="3" Text="{Binding GastSpieler}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="4" Text="{Binding VisibleGuestDWZ}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="2" Text="{Binding VisibleHomeDWZ}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="3" Text="{Binding GastSpieler}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="4" Text="{Binding VisibleGuestDWZ}" VerticalTextAlignment="Center" />
                             <Label Grid.Column="5" Text="{Binding Ergebnis}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                         </Grid>
                     </Border>

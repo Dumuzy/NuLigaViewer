@@ -12,7 +12,7 @@
 
         <Grid Grid.Row="0" ColumnSpacing="1" Padding="6" VerticalOptions="Center">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="Auto" />
@@ -43,7 +43,7 @@
                         </Border.StrokeShape>
                         <Grid ColumnSpacing="1" VerticalOptions="Center">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="35" />
+                                <ColumnDefinition Width="40" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="40" />
                                 <ColumnDefinition Width="Auto" />
