@@ -4,22 +4,29 @@
              x:Class="NuLigaViewer.MainPage"
              Title="Verbandsliga Baden und Karlsruhe">
 
-    <CollectionView ItemsSource="{Binding Leagues}"
-                    SelectionMode="Single"
-                    SelectionChanged="OnLeagueSelected" Margin="5,5,5,10">
-        <CollectionView.ItemTemplate>
-            <DataTemplate>
-                <Border Margin="2" Padding="5">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="10" />
-                    </Border.StrokeShape>
-                    <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" />
-                </Border>
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
+    <Grid Padding="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <CollectionView Grid.Row="0"
+                        ItemsSource="{Binding Leagues}"
+                        SelectionMode="Single"
+                        SelectionChanged="OnLeagueSelected"
+                        Margin="5,5,5,10">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="2" Padding="5">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10" />
+                        </Border.StrokeShape>
+                        <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" />
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
 
-        <CollectionView.EmptyView>
-            <Label Text="No leagues available" HorizontalOptions="Center" VerticalOptions="Center" />
-        </CollectionView.EmptyView>
-    </CollectionView>
+            <CollectionView.EmptyView>
+                <Label Text="No leagues available" HorizontalOptions="Center" VerticalOptions="Center" />
+            </CollectionView.EmptyView>
+        </CollectionView>
+    </Grid>
 </ContentPage>
