@@ -12,7 +12,6 @@ namespace NuLigaViewer.ViewModels
             _gameDay = gameDay ?? throw new ArgumentNullException(nameof(gameDay));
         }
 
-        public int RankAfterSorting { get; set; }
         public int Runde => _gameDay.Runde;
         public DateTime Datum => _gameDay.Datum;
         public string Title => _gameDay.Title;

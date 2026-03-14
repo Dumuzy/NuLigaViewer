@@ -21,10 +21,8 @@
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <ActivityIndicator Grid.Column="0" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" />
-            <Button Grid.Column="1" Text="Tabelle korrekt sortieren" Command="{Binding SortTeamsCommand}" />
         </Grid>
 		
         <Grid Grid.Row="1" ColumnSpacing="1" Padding="6" BackgroundColor="{DynamicResource PageBackgroundColor}">
@@ -68,7 +66,7 @@
                                 <ColumnDefinition Width="40" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Grid.Column="0" Text="{Binding RankAfterSorting}" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />
+                            <Label Grid.Column="0" Text="{Binding Rank}" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />
                             <Label Grid.Column="1" Text="{Binding Name}" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />
                             <Label Grid.Column="2" Text="{Binding AverageDwz}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />
                             <Label Grid.Column="3" Text="{Binding Games}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="{Binding RowColor}" />

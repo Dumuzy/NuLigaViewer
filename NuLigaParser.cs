@@ -8,7 +8,7 @@ namespace NuLigaViewer
     {
         private static readonly string urlRoot = "https://bsv-schach.liga.nu/";
 
-        public static event Action<GameDay>? GameDayReportLoadedForGui;
+        public static event Action<League, GameDay>? GameDayReportLoadedForGui;
 
         private static readonly HtmlWeb web = new();
 
@@ -48,9 +48,9 @@ namespace NuLigaViewer
             return leagues;
         }
 
-        public static Team[] ParseTeams(string url)
+        public static Team[] ParseTeams(League league)
         {
-            var doc = web.Load(url);
+            var doc = web.Load(league.Url);
             var crossTableList = doc.DocumentNode.SelectNodes("//table[@class='cross-table']");
             if (crossTableList == null || crossTableList.Count < 1)
             {
@@ -66,13 +66,13 @@ namespace NuLigaViewer
             Parallel.For(1, rows.Count, row =>
             {
                 var cells = rows[row].SelectNodes("th|td");
-                var newTeam = ParseTeam(cells, row, numberOfTeams);
+                var newTeam = ParseTeam(cells, row, numberOfTeams, league);
                 teams[row - 1] = newTeam;
             });
             return teams;
         }
 
-        private static Team ParseTeam(HtmlNodeCollection cells, int row, int numberOfTeams)
+        private static Team ParseTeam(HtmlNodeCollection cells, int row, int numberOfTeams, League league)
         {
             var teamUrl = cells[2].QuerySelector("a").Attributes["href"].Value;
 
@@ -87,7 +87,7 @@ namespace NuLigaViewer
                 BoardPointsPerRank = new double[numberOfTeams - 1]
             };
 
-            ParseGameDaysAndPlayers(newTeam, numberOfTeams);
+            ParseGameDaysAndPlayers(newTeam, numberOfTeams, league);
 
             var rankIndex = 0;
             for (var i = 0; i < numberOfTeams; i++)
@@ -104,7 +104,7 @@ namespace NuLigaViewer
             return newTeam;
         }
 
-        private static void ParseGameDaysAndPlayers(Team newTeam, int numberOfTeams)
+        private static void ParseGameDaysAndPlayers(Team newTeam, int numberOfTeams, League league)
         {
             if (newTeam.TeamUrl == null)
             {
@@ -112,11 +112,11 @@ namespace NuLigaViewer
             }
 
             var teamDoc = web.Load(newTeam.TeamUrl);
-            newTeam.GameDays = ParseGameDays(teamDoc, newTeam.GameDayReportLoaded);
+            newTeam.GameDays = ParseGameDays(teamDoc, newTeam.GameDayReportLoaded, league);
             newTeam.TeamPlayers = ParsePlayers(teamDoc, newTeam.Name, newTeam.GameDays?.Count ?? numberOfTeams - 1);
         }
 
-        public static List<GameDay>? ParseGameDays(HtmlDocument doc, Action<GameDay> gameDayReportLoaded)
+        public static List<GameDay>? ParseGameDays(HtmlDocument doc, Action<GameDay> gameDayReportLoaded, League league)
         {
             var resultSetList = doc.DocumentNode.SelectNodes("//table[@class='result-set']");
             if (resultSetList == null || resultSetList.Count < 2)
@@ -152,13 +152,13 @@ namespace NuLigaViewer
 
                 gameDays.Add(gameDay);
 
-                _ = LoadGameReportAsync(gameDay, gameDayReportLoaded);
+                _ = LoadGameReportAsync(gameDay, gameDayReportLoaded, league);
             }
 
             return gameDays;
         }
 
-        private static async Task LoadGameReportAsync(GameDay? gameDay, Action<GameDay> gameDayReportLoaded)
+        private static async Task LoadGameReportAsync(GameDay? gameDay, Action<GameDay> gameDayReportLoaded, League league)
         {
             if (gameDay == null || string.IsNullOrWhiteSpace(gameDay.ReportUrl))
             {
@@ -172,7 +172,7 @@ namespace NuLigaViewer
                 gameDay.Report = ParseGameReport(doc, gameDay);
 
                 gameDayReportLoaded(gameDay);
-                GameDayReportLoadedForGui?.Invoke(gameDay);
+                GameDayReportLoadedForGui?.Invoke(league, gameDay);
             });
         }
 

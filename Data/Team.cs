@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace NuLigaViewer.Data
 {
     public class Team
@@ -8,20 +6,18 @@ namespace NuLigaViewer.Data
         public string Name { get; set; } = string.Empty;
         public double DWZ => (TeamPlayers != null && TeamPlayers.Count > 0) ? Math.Round(TeamPlayers.Average(x => x.DWZ)) : 0;
 
-        [JsonIgnore]
         public required double[] BoardPointsPerRank { get; set; }
         public int Spiele { get; set; }
         public int Punkte { get; set; }
         public double BP { get; set; }
 
-        [JsonIgnore]
         public string? TeamUrl { get; set; }
 
-        [JsonIgnore]
         public List<Player>? TeamPlayers { get; set; }
 
-        [JsonIgnore]
         public List<GameDay>? GameDays { get; set; }
+        public bool AllReportsLoaded => GameDays != null && GameDays.Where(gd => !string.IsNullOrEmpty(gd.ReportUrl))
+            .All(gd => gd.Report != null);
         public double BW => ComputeBerlinTieBreakSumOverAllGameDays();
 
         public double ComputeBerlinTieBreakSumOverAllGameDays()

@@ -12,17 +12,18 @@ namespace NuLigaViewer.ViewModels
         public TeamViewModel(Team team)
         {
             _team = team ?? throw new ArgumentNullException(nameof(team));
+            Rank = _team.Rang;
             BuildPlayerRows();
         }
 
-        public int RankAfterSorting { get; set; }
-        public int Rank => _team.Rang;
+        public int Rank { get; set; }
         public string Name => _team.Name;
         public int Games => _team.Spiele;
         public int Points => _team.Punkte;
         public double BoardPointsSum => _team.BP;
         public double AverageDwz => _team.DWZ;
         public double BerlinTieBreak => _team.BW;
+        public bool AllReportsLoaded => _team.AllReportsLoaded;
         public ObservableCollection<PlayerRow> PlayerRows { get; } = new();
         public IReadOnlyList<string> RoundHeaders { get; private set; } = Array.Empty<string>();
 

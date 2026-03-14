@@ -24,9 +24,6 @@ namespace NuLigaViewer.ViewModels
 
         public ObservableCollection<TopTenPlayerViewModel> TopTenPlayer { get; } = new();
 
-        private readonly RelayCommand _sortTeamsCommand;
-        public ICommand SortTeamsCommand => _sortTeamsCommand;
-
         public League League { get; }
 
         private bool _isLoading;
@@ -47,16 +44,14 @@ namespace NuLigaViewer.ViewModels
         {
             League = league ?? throw new ArgumentNullException(nameof(league));
 
-            _sortTeamsCommand = new RelayCommand(SortTeamsAsync, () => Teams.Count > 0);
-
             NuLigaParser.GameDayReportLoadedForGui += NuLigaParser_GameDayReportLoaded;
 
             _ = LoadTeamsAsync();
         }
 
-        private void NuLigaParser_GameDayReportLoaded(GameDay gameDay)
+        private void NuLigaParser_GameDayReportLoaded(League league, GameDay gameDay)
         {
-            if (Teams.Count == 0)
+            if (Teams.Count == 0 || league != League)
             {
                 return;
             }
@@ -75,6 +70,12 @@ namespace NuLigaViewer.ViewModels
                     gdViewModel.Refresh();
                 }
             });
+
+            if (IsLoading || Teams.Any(team => !team.AllReportsLoaded))
+            {
+                return;
+            }
+            _ = SortTeamsAsync();
         }
 
         private async Task LoadTeamsAsync()
@@ -93,30 +94,16 @@ namespace NuLigaViewer.ViewModels
             {
                 IsLoading = true;
 
-                var teams = await Task.Run(() => NuLigaParser.ParseTeams(League.Url) ?? []);
+                var teams = await Task.Run(() => NuLigaParser.ParseTeams(League) ?? []);
                 var lastGameDayReport = NuLigaTransformer.TransformTeamsToLastGameDayReport(teams);
                 var allPlayers = NuLigaTransformer.TransformTeamsToAllPlayerList(teams);
-
-                var vms = teams.Select(t => new TeamViewModel(t)).ToList();
-                if (vms.Count > 0)
-                {
-                    vms[0].RowColor = Colors.Green;
-
-                    for (int i = Math.Max(0, vms.Count - 2); i < vms.Count; i++)
-                    {
-                        vms[i].RowColor = Colors.Red;
-                    }
-                }
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Teams.Clear();
-                    var index = 1;
-                    foreach (var vm in vms)
+                    foreach (var team in teams)
                     {
-                        vm.RankAfterSorting = index;
-                        Teams.Add(vm);
-                        index++;
+                        Teams.Add(new TeamViewModel(team));
                     }
 
                     LastGameDayReport.Clear();
@@ -138,7 +125,6 @@ namespace NuLigaViewer.ViewModels
                     }
 
                     OnPropertyChanged(nameof(LastGameTitle));
-                    _sortTeamsCommand.RaiseCanExecuteChanged();
                 });
             }
             catch (Exception e)
@@ -154,6 +140,24 @@ namespace NuLigaViewer.ViewModels
         public async Task SortTeamsAsync()
         {
             var vms = Teams.Select(t => t).ToList();
+
+            SortAndColorTeams(ref vms);
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Teams.Clear();
+                var index = 1;
+                foreach (var vm in vms)
+                {
+                    vm.Rank = index;
+                    Teams.Add(vm);
+                    index++;
+                }
+            });
+        }
+
+        private void SortAndColorTeams(ref List<TeamViewModel> vms)
+        {
             vms.Sort((a, b) =>
             {
                 int pointsComparison = b.Points.CompareTo(a.Points);
@@ -185,18 +189,6 @@ namespace NuLigaViewer.ViewModels
                     vms[i].RowColor = Application.Current?.RequestedTheme == AppTheme.Dark ? Colors.White : Colors.Black;
                 }
             }
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                Teams.Clear();
-                var index = 1;
-                foreach (var vm in vms)
-                {
-                    vm.RankAfterSorting = index;
-                    Teams.Add(vm);
-                    index++;
-                }
-            });
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
