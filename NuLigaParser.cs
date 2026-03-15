@@ -8,7 +8,7 @@ namespace NuLigaViewer
     {
         private static readonly string urlRoot = "https://bsv-schach.liga.nu/";
 
-        public static event Action<League, GameDay>? GameDayReportLoadedForGui;
+        public static event Action<League, TeamPairing>? TeamPairingReportLoadedForGui;
 
         private static readonly HtmlWeb web = new();
 
@@ -116,7 +116,7 @@ namespace NuLigaViewer
             newTeam.TeamPlayers = ParsePlayers(teamDoc, newTeam.Name, newTeam.GameDays?.Count ?? numberOfTeams - 1);
         }
 
-        public static List<GameDay>? ParseGameDays(HtmlDocument doc, Action<GameDay> gameDayReportLoaded, League league)
+        public static List<TeamPairing>? ParseGameDays(HtmlDocument doc, Action<TeamPairing> gameDayReportLoaded, League league)
         {
             var resultSetList = doc.DocumentNode.SelectNodes("//table[@class='result-set']");
             if (resultSetList == null || resultSetList.Count < 2)
@@ -126,7 +126,7 @@ namespace NuLigaViewer
                 return null;
             }
 
-            var gameDays = new List<GameDay>();
+            var gameDays = new List<TeamPairing>();
             var gameDayTable = resultSetList[1];
 
             var rows = gameDayTable.SelectNodes("tr");
@@ -140,7 +140,7 @@ namespace NuLigaViewer
                 var boardPoints = cells[8].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' ');
                 var reportUrl = cells[8].QuerySelector("a")?.Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
 
-                var gameDay = new GameDay
+                var gameDay = new TeamPairing
                 {
                     Datum = DateTime.ParseExact(date, "d", new CultureInfo("de-DE")),
                     Runde = int.Parse(round),
@@ -158,9 +158,9 @@ namespace NuLigaViewer
             return gameDays;
         }
 
-        private static async Task LoadGameReportAsync(GameDay? gameDay, Action<GameDay> gameDayReportLoaded, League league)
+        private static async Task LoadGameReportAsync(TeamPairing? teamPairing, Action<TeamPairing> gameDayReportLoaded, League league)
         {
-            if (gameDay == null || string.IsNullOrWhiteSpace(gameDay.ReportUrl))
+            if (teamPairing == null || string.IsNullOrWhiteSpace(teamPairing.ReportUrl))
             {
                 return;
             }
@@ -168,15 +168,15 @@ namespace NuLigaViewer
             await Task.Run(() =>
             {
                 var web = new HtmlWeb();
-                var doc = web.Load(gameDay.ReportUrl);
-                gameDay.Report = ParseGameReport(doc, gameDay);
+                var doc = web.Load(teamPairing.ReportUrl);
+                teamPairing.Report = ParseGameReport(doc, teamPairing);
 
-                gameDayReportLoaded(gameDay);
-                GameDayReportLoadedForGui?.Invoke(league, gameDay);
+                gameDayReportLoaded(teamPairing);
+                TeamPairingReportLoadedForGui?.Invoke(league, teamPairing);
             });
         }
 
-        public static GameReport? ParseGameReport(HtmlDocument doc, GameDay gameDay)
+        public static GameReport? ParseGameReport(HtmlDocument doc, TeamPairing teamPairing)
         {
             var resultSetList = doc.DocumentNode.SelectNodes("//table[@class='result-set']");
             if (resultSetList == null || resultSetList.Count < 1)
@@ -208,7 +208,7 @@ namespace NuLigaViewer
                     GastSpieler = cells[3].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' '),
                     GastSpielerDWZ = int.Parse(string.IsNullOrEmpty(guestPlayerDWZ) ? "1000" : guestPlayerDWZ),
                     Ergebnis = cells[5].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' '),
-                    RelatedGameDay = gameDay
+                    RelatedTeamPairing = teamPairing
                 };
                 pairings.Add(pairing);
             }

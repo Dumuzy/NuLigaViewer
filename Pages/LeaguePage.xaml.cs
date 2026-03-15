@@ -23,7 +23,7 @@ namespace NuLigaViewer.Pages
                     Name = leagueName
                 };
 
-                BindingContext = ViewModels.TeamsViewModel.GetOrCreate(league);
+                BindingContext = ViewModels.LeagueViewModel.GetOrCreate(league);
             }
         }
 

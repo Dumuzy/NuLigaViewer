@@ -2,55 +2,68 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NuLigaViewer.Pages.GameDayPage"
-             Title="{Binding Title}">
+             Title="{Binding League.Name}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Zurück zur Übersicht"
+                     Priority="0"
+                     Order="Primary"
+                     Clicked="OnBackButtonClicked" />
+    </ContentPage.ToolbarItems>
 
     <Grid Padding="8">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" ColumnSpacing="1" Padding="6" VerticalOptions="Center">
+        <HorizontalStackLayout Grid.Row="0" VerticalOptions="Center">
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" VerticalOptions="Center" />
+            <Label Text="{Binding LastGameTitle}" FontAttributes="Bold" FontSize="16" VerticalTextAlignment="Center" />
+        </HorizontalStackLayout>
+
+		<Grid Grid.Row="1" ColumnSpacing="1" Padding="6" BackgroundColor="{DynamicResource PageBackgroundColor}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="50" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="40" />
-                <ColumnDefinition Width="40" />
-            </Grid.ColumnDefinitions>
+				<ColumnDefinition Width="50" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="40" />
+				<ColumnDefinition Width="60" />
+			</Grid.ColumnDefinitions>
 
-            <Label Grid.Column="0" Text="Brett" FontAttributes="Bold" VerticalTextAlignment="Center" />
-            <Label Grid.Column="1" Text="{Binding HeimMannschaft}" FontAttributes="Bold" VerticalTextAlignment="Center" />
-            <Label Grid.Column="2" Text="DWZ" FontAttributes="Bold" VerticalTextAlignment="Center" />
-            <Label Grid.Column="3" Text="{Binding GastMannschaft}" FontAttributes="Bold" VerticalTextAlignment="Center" />
-            <Label Grid.Column="4" Text="DWZ" FontAttributes="Bold" VerticalTextAlignment="Center" />
-            <Label Grid.Column="5" Text="Erg." FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-        </Grid>
+            <Label Grid.Column="0" Text="Heim" FontAttributes="Bold" VerticalTextAlignment="Center" />
+			<Label Grid.Column="1" Text="DWZ" FontAttributes="Bold" VerticalTextAlignment="Center" />
+			<Label Grid.Column="2" Text="Gast" FontAttributes="Bold" VerticalTextAlignment="Center" />
+			<Label Grid.Column="3" Text="DWZ" FontAttributes="Bold" VerticalTextAlignment="Center" />
+			<Label Grid.Column="4" Text="Ergebnis" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+		</Grid>
 
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Report.Pairings}" SelectionMode="None">
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding LastGameDay}"
+                        SelectionMode="Single"
+                        SelectionChanged="OnTeamSelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border Margin="2" Padding="6">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8" />
                         </Border.StrokeShape>
-                        <Grid ColumnSpacing="1" VerticalOptions="Center">
+
+                        <Grid ColumnSpacing="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="40" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="50" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="40" />
-                                <ColumnDefinition Width="40" />
+								<ColumnDefinition Width="50" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="40" />
+								<ColumnDefinition Width="60" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Grid.Column="0" Text="{Binding Brett}" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="1" Text="{Binding HeimSpieler}" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="2" Text="{Binding VisibleHomeDWZ}" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="3" Text="{Binding GastSpieler}" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="4" Text="{Binding VisibleGuestDWZ}" VerticalTextAlignment="Center" />
-                            <Label Grid.Column="5" Text="{Binding Ergebnis}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="0" Text="{Binding HeimMannschaft}" VerticalTextAlignment="Center" />
+							<Label Grid.Column="1" Text="{Binding HeimMannschaftDWZ}" VerticalTextAlignment="Center" />
+							<Label Grid.Column="2" Text="{Binding GastMannschaft}" VerticalTextAlignment="Center" />
+							<Label Grid.Column="3" Text="{Binding GastMannschaftDWZ}" VerticalTextAlignment="Center" />
+							<Label Grid.Column="4" Text="{Binding BrettPunkte}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                         </Grid>
                     </Border>
                 </DataTemplate>

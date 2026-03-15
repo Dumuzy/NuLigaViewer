@@ -4,30 +4,30 @@ namespace NuLigaViewer
 {
     public static class NuLigaTransformer
     {
-        public static List<GameDay> TransformTeamsToLastGameDayReport(Team[] teams)
+        public static List<TeamPairing> TransformTeamsToLastGameDay(Team[] teams)
         {
             if (teams.Length < 1)
             {
                 return [];
             }
 
-            var currentGameDay = teams[0].GameDays?.Last(gd => gd.ReportUrl != null)?.Datum;
-            if (currentGameDay == null)
+            var currentGameDayDate = teams[0].GameDays?.Last(gd => gd.ReportUrl != null)?.Datum;
+            if (currentGameDayDate == null)
             {
                 return [];
             }
 
-            var currentGameDayReport = new List<GameDay>();
+            var currentGameDay = new List<TeamPairing>();
             foreach (var team in teams)
             {
-                var gameDay = team.GameDays?.FirstOrDefault(gd => gd.Datum == currentGameDay);
-                if (gameDay != null && !currentGameDayReport.Any(gd => gd.HeimMannschaft == gameDay.HeimMannschaft && gd.GastMannschaft == gameDay.GastMannschaft))
+                var teamPairing = team.GameDays?.FirstOrDefault(gd => gd.Datum == currentGameDayDate);
+                if (teamPairing != null && !currentGameDay.Any(gd => gd.HeimMannschaft == teamPairing.HeimMannschaft && gd.GastMannschaft == teamPairing.GastMannschaft))
                 {
-                    currentGameDayReport.Add(gameDay);
+                    currentGameDay.Add(teamPairing);
                 }
             }
 
-            return currentGameDayReport;
+            return currentGameDay;
         }
 
         public static List<Player> TransformTeamsToAllPlayerList(Team[] teams)

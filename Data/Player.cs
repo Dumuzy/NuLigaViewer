@@ -29,7 +29,7 @@ namespace NuLigaViewer.Data
         public string? Opponent => PlayerIsInHomeTeam ? Pairing?.GastSpieler : Pairing?.HeimSpieler;
         public int? OpponentDWZ => PlayerIsInHomeTeam ? Pairing?.GastSpielerDWZ : Pairing?.HeimSpielerDWZ;
         public string? OpponentDWZString => PlayerIsInHomeTeam ? Pairing?.VisibleGuestDWZ : Pairing?.VisibleHomeDWZ;
-        public string? OpponentTeam => PlayerIsInHomeTeam ? Pairing?.RelatedGameDay?.GastMannschaft : Pairing?.RelatedGameDay?.HeimMannschaft;
+        public string? OpponentTeam => PlayerIsInHomeTeam ? Pairing?.RelatedTeamPairing?.GastMannschaft : Pairing?.RelatedTeamPairing?.HeimMannschaft;
 
         public Pairing? SecondPairing { get; set; }
         public bool SecExists => SecondPairing != null;
@@ -37,6 +37,6 @@ namespace NuLigaViewer.Data
         public string? SecOpponent => PlayerIsInHomeTeam ? SecondPairing?.GastSpieler : SecondPairing?.HeimSpieler;
         public int? SecOpponentDWZ => PlayerIsInHomeTeam ? SecondPairing?.GastSpielerDWZ : SecondPairing?.HeimSpielerDWZ;
         public string? SecOpponentDWZString => PlayerIsInHomeTeam ? SecondPairing?.VisibleGuestDWZ : SecondPairing?.VisibleHomeDWZ;
-        public string? SecOpponentTeam => PlayerIsInHomeTeam ? SecondPairing?.RelatedGameDay?.GastMannschaft : SecondPairing?.RelatedGameDay?.HeimMannschaft;
+        public string? SecOpponentTeam => PlayerIsInHomeTeam ? SecondPairing?.RelatedTeamPairing?.GastMannschaft : SecondPairing?.RelatedTeamPairing?.HeimMannschaft;
     }
 }

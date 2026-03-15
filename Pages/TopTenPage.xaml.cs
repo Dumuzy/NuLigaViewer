@@ -3,9 +3,9 @@ using NuLigaViewer.ViewModels;
 
 namespace NuLigaViewer.Pages
 {
-    public partial class TopTen : ContentPage, IQueryAttributable
+    public partial class TopTenPage : ContentPage, IQueryAttributable
     {
-        public TopTen()
+        public TopTenPage()
         {
             InitializeComponent();
         }
@@ -43,7 +43,7 @@ namespace NuLigaViewer.Pages
                     Name = name ?? string.Empty
                 };
 
-                BindingContext = TeamsViewModel.GetOrCreate(league);
+                BindingContext = LeagueViewModel.GetOrCreate(league);
             }
         }
 

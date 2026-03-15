@@ -1,6 +1,6 @@
 namespace NuLigaViewer.Data
 {
-    public class GameDay
+    public class TeamPairing
     {
         public DateTime Datum { get; set; }
         public int Runde { get; set; }

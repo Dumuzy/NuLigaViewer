@@ -15,15 +15,15 @@ namespace NuLigaViewer.Data
 
         public List<Player>? TeamPlayers { get; set; }
 
-        public List<GameDay>? GameDays { get; set; }
-        public bool AllReportsLoaded => GameDays != null && GameDays.Where(gd => !string.IsNullOrEmpty(gd.ReportUrl))
-            .All(gd => gd.Report != null);
+        public List<TeamPairing>? GameDays { get; set; }
+        public bool AllReportsLoaded => GameDays != null && GameDays.Where(t => !string.IsNullOrEmpty(t.ReportUrl))
+            .All(t => t.Report != null);
         public double BW => ComputeBerlinTieBreakSumOverAllGameDays();
 
         public double ComputeBerlinTieBreakSumOverAllGameDays()
         {
             var bwTotal = 0.0;
-            foreach (var gameDay in GameDays ?? Enumerable.Empty<GameDay>())
+            foreach (var gameDay in GameDays ?? Enumerable.Empty<TeamPairing>())
             {
                 if (gameDay.Report == null)
                 {
@@ -36,7 +36,7 @@ namespace NuLigaViewer.Data
             return bwTotal;
         }
 
-        public void GameDayReportLoaded(GameDay gameDay)
+        public void GameDayReportLoaded(TeamPairing gameDay)
         {
             if (gameDay.Report == null)
             {

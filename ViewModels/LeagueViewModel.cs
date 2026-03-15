@@ -2,25 +2,24 @@ using NuLigaViewer.Data;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Input;
 
 namespace NuLigaViewer.ViewModels
 {
-    public class TeamsViewModel : INotifyPropertyChanged
+    public class LeagueViewModel : INotifyPropertyChanged
     {
-        private static readonly ConcurrentDictionary<string, TeamsViewModel> _instances = new();
+        private static readonly ConcurrentDictionary<string, LeagueViewModel> _instances = new();
 
-        public static TeamsViewModel GetOrCreate(League league)
+        public static LeagueViewModel GetOrCreate(League league)
         {
             if (league == null) throw new ArgumentNullException(nameof(league));
 
             var key = (league.Url ?? string.Empty).Trim();
-            return _instances.GetOrAdd(key, _ => new TeamsViewModel(league));
+            return _instances.GetOrAdd(key, _ => new LeagueViewModel(league));
         }
 
         public ObservableCollection<TeamViewModel> Teams { get; } = new();
-        public ObservableCollection<GameDayViewModel> LastGameDayReport { get; } = new();
-        public string? LastGameTitle => LastGameDayReport.Any() ? LastGameDayReport.First().Title : null;
+        public ObservableCollection<TeamPairingViewModel> LastGameDay { get; } = new();
+        public string? LastGameTitle => LastGameDay.Any() ? LastGameDay.First().Title : null;
 
         public ObservableCollection<TopTenPlayerViewModel> TopTenPlayer { get; } = new();
 
@@ -40,16 +39,16 @@ namespace NuLigaViewer.ViewModels
             }
         }
 
-        public TeamsViewModel(League league)
+        public LeagueViewModel(League league)
         {
             League = league ?? throw new ArgumentNullException(nameof(league));
 
-            NuLigaParser.GameDayReportLoadedForGui += NuLigaParser_GameDayReportLoaded;
+            NuLigaParser.TeamPairingReportLoadedForGui += NuLigaParser_TeamPairingReportLoaded;
 
             _ = LoadTeamsAsync();
         }
 
-        private void NuLigaParser_GameDayReportLoaded(League league, GameDay gameDay)
+        private void NuLigaParser_TeamPairingReportLoaded(League league, TeamPairing teamPairing)
         {
             if (Teams.Count == 0 || league != League)
             {
@@ -58,16 +57,16 @@ namespace NuLigaViewer.ViewModels
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                var teamViewModel = Teams.FirstOrDefault(t => t.ContainsGameDay(gameDay));
+                var teamViewModel = Teams.FirstOrDefault(t => t.ContainsTeamPairing(teamPairing));
                 if (teamViewModel != null)
                 {
                     teamViewModel.Refresh();
                 }
 
-                var gdViewModel = LastGameDayReport.FirstOrDefault(gd => gd.ContainsGameDay(gameDay));
-                if (gdViewModel != null)
+                var tpViewModel = LastGameDay.FirstOrDefault(t => t.ContainsTeamPairing(teamPairing));
+                if (tpViewModel != null)
                 {
-                    gdViewModel.Refresh();
+                    tpViewModel.Refresh();
                 }
             });
 
@@ -95,7 +94,7 @@ namespace NuLigaViewer.ViewModels
                 IsLoading = true;
 
                 var teams = await Task.Run(() => NuLigaParser.ParseTeams(League) ?? []);
-                var lastGameDayReport = NuLigaTransformer.TransformTeamsToLastGameDayReport(teams);
+                var lastGameDay = NuLigaTransformer.TransformTeamsToLastGameDay(teams);
                 var allPlayers = NuLigaTransformer.TransformTeamsToAllPlayerList(teams);
 
                 MainThread.BeginInvokeOnMainThread(() =>
@@ -106,10 +105,10 @@ namespace NuLigaViewer.ViewModels
                         Teams.Add(new TeamViewModel(team));
                     }
 
-                    LastGameDayReport.Clear();
-                    foreach (var gd in lastGameDayReport)
+                    LastGameDay.Clear();
+                    foreach (var teamPairing in lastGameDay)
                     {
-                        LastGameDayReport.Add(new GameDayViewModel(gd));
+                        LastGameDay.Add(new TeamPairingViewModel(teamPairing));
                     }
 
                     TopTenPlayer.Clear();

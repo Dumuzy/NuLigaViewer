@@ -18,10 +18,10 @@
                           ContentTemplate="{DataTemplate pages:LeaguePage}"
                           Route="table" />
         <ShellContent Title="Letzter Spieltag"
-                          ContentTemplate="{DataTemplate pages:GameReportPage}"
-                          Route="gameday" />
+                          ContentTemplate="{DataTemplate pages:GameDayPage}"
+                          Route="lastgameday" />
         <ShellContent Title="Top 10"
-                          ContentTemplate="{DataTemplate pages:TopTen}"
+                          ContentTemplate="{DataTemplate pages:TopTenPage}"
                           Route="topten" />
     </TabBar>
 </Shell>

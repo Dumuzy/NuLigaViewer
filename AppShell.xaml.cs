@@ -18,7 +18,7 @@
                     return;
 
                 if ((location.EndsWith("league/table", StringComparison.OrdinalIgnoreCase)
-                    || location.EndsWith("league/gameday", StringComparison.OrdinalIgnoreCase)
+                    || location.EndsWith("league/lastgameday", StringComparison.OrdinalIgnoreCase)
                     || location.EndsWith("league/topten", StringComparison.OrdinalIgnoreCase))
                     && !string.IsNullOrWhiteSpace(NavigationState.LastLeagueUrl))
                 {

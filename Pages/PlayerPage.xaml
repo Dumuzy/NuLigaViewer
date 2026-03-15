@@ -79,14 +79,14 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <Label Grid.Column="0" Grid.Row="0" Text="{Binding Pairing.RelatedGameDay.Runde}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="0" Grid.Row="0" Text="{Binding Pairing.RelatedTeamPairing.Runde}" VerticalTextAlignment="Center" />
                             <Label Grid.Column="1" Grid.Row="0" Text="{Binding Pairing.Brett}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                             <Label Grid.Column="2" Grid.Row="0" Text="{Binding Opponent}" VerticalTextAlignment="Center" />
                             <Label Grid.Column="3" Grid.Row="0" Text="{Binding OpponentDWZString}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                             <Label Grid.Column="4" Grid.Row="0" Text="{Binding ResultForPlayer}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                             <Label Grid.Column="5" Grid.Row="0" Text="{Binding OpponentTeam}" VerticalTextAlignment="Center" />
 
-                            <Label Grid.Column="0" Grid.Row="1" IsVisible="{Binding SecExists}" Text="{Binding SecondPairing.RelatedGameDay.Runde}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="0" Grid.Row="1" IsVisible="{Binding SecExists}" Text="{Binding SecondPairing.RelatedTeamPairing.Runde}" VerticalTextAlignment="Center" />
                             <Label Grid.Column="1" Grid.Row="1" IsVisible="{Binding SecExists}" Text="{Binding SecondPairing.Brett}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                             <Label Grid.Column="2" Grid.Row="1" IsVisible="{Binding SecExists}" Text="{Binding SecOpponent}" VerticalTextAlignment="Center" />
                             <Label Grid.Column="3" Grid.Row="1" IsVisible="{Binding SecExists}" Text="{Binding SecOpponentDWZString}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
