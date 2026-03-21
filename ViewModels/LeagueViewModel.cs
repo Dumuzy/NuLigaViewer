@@ -13,9 +13,25 @@ namespace NuLigaViewer.ViewModels
         {
             if (league == null) throw new ArgumentNullException(nameof(league));
 
-            var key = (league.Url ?? string.Empty).Trim();
+            var key = (league.Name ?? string.Empty).Trim();
             return _instances.GetOrAdd(key, _ => new LeagueViewModel(league));
         }
+
+        public static LeagueViewModel? Get(string leagueName)
+        {
+            _instances.TryGetValue(leagueName, out LeagueViewModel? league);
+            return league;
+        }
+
+        public LeagueViewModel(League league)
+        {
+            League = league ?? throw new ArgumentNullException(nameof(league));
+
+            NuLigaParser.TeamPairingReportLoadedForGui += NuLigaParser_TeamPairingReportLoaded;
+
+            _ = LoadTeamsAsync();
+        }
+        public League League { get; }
 
         public ObservableCollection<TeamViewModel> Teams { get; } = new();
         public ObservableCollection<TeamPairingViewModel> LastGameDay { get; } = new();
@@ -23,7 +39,8 @@ namespace NuLigaViewer.ViewModels
 
         public ObservableCollection<TopTenPlayerViewModel> TopTenPlayer { get; } = new();
 
-        public League League { get; }
+        public List<TeamPairing> AllAvailableTeamPairings => Teams.SelectMany(t => t.GameDays ?? []).Distinct().ToList();
+        public List<Player> AllAvailablePlayer => Teams.Where(x => x.Players != null).SelectMany(x => x.Players!).ToList();
 
         private bool _isLoading;
         public bool IsLoading
@@ -37,15 +54,6 @@ namespace NuLigaViewer.ViewModels
                     OnPropertyChanged(nameof(IsLoading));
                 }
             }
-        }
-
-        public LeagueViewModel(League league)
-        {
-            League = league ?? throw new ArgumentNullException(nameof(league));
-
-            NuLigaParser.TeamPairingReportLoadedForGui += NuLigaParser_TeamPairingReportLoaded;
-
-            _ = LoadTeamsAsync();
         }
 
         private void NuLigaParser_TeamPairingReportLoaded(League league, TeamPairing teamPairing)

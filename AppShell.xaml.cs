@@ -6,6 +6,10 @@
         {
             InitializeComponent();
 
+            Routing.RegisterRoute("teampairing", typeof(Pages.TeamPairingPage));
+            Routing.RegisterRoute("teamplayers", typeof(Pages.PlayersPage));
+            Routing.RegisterRoute("playerdetails", typeof(Pages.PlayerPage));
+
             Navigated += AppShell_Navigated;
         }
 

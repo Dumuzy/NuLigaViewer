@@ -54,16 +54,21 @@ namespace NuLigaViewer.Pages
 
         async void OnTeamSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            var selected = e.CurrentSelection.FirstOrDefault() as TeamPairingViewModel;
-            if (selected is null)
+            var selectedTeamPairing = e.CurrentSelection.FirstOrDefault() as TeamPairingViewModel;
+            if (selectedTeamPairing is null)
+            {
                 return;
-
-            await Navigation.PushAsync(new TeamPairingPage(selected));
+            }
 
             if (sender is CollectionView cv)
             {
                 cv.SelectedItem = null;
             }
+
+            var leagueName = Uri.EscapeDataString(NavigationState.LastLeagueName ?? string.Empty);
+            var homeTeam = Uri.EscapeDataString(selectedTeamPairing.HeimMannschaft ?? string.Empty);
+            var guestTeam = Uri.EscapeDataString(selectedTeamPairing.GastMannschaft ?? string.Empty);
+            await Shell.Current.GoToAsync($"teampairing?leagueName={leagueName}&homeTeam={homeTeam}&guestTeam={guestTeam}");
         }
     }
 }

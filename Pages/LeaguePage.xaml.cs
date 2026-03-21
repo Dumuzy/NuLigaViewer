@@ -34,16 +34,20 @@ namespace NuLigaViewer.Pages
 
         async void OnTeamSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            var selected = e.CurrentSelection.FirstOrDefault() as ViewModels.TeamViewModel;
-            if (selected is null)
+            var teamVm = e.CurrentSelection.FirstOrDefault() as ViewModels.TeamViewModel;
+            if (teamVm is null)
+            {
                 return;
-
-            await Navigation.PushAsync(new PlayersPage(selected));
+            }
 
             if (sender is CollectionView cv)
             {
                 cv.SelectedItem = null;
             }
+
+            var leagueName = Uri.EscapeDataString(NavigationState.LastLeagueName ?? string.Empty);
+            var teamName = Uri.EscapeDataString(teamVm.Name ?? string.Empty);
+            await Shell.Current.GoToAsync($"teamplayers?leagueName={leagueName}&teamName={teamName}");
         }
     }
 }
