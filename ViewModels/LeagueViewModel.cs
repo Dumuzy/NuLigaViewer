@@ -69,6 +69,13 @@ namespace NuLigaViewer.ViewModels
                 return;
             }
 
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Teams.Clear();
+                LastGameDay.Clear();
+                TopTenPlayer.Clear();
+            });
+
             try
             {
                 IsLoading = true;
@@ -129,6 +136,7 @@ namespace NuLigaViewer.ViewModels
                 }
 
                 OnPropertyChanged(nameof(LastGameTitle));
+                IsLoading = false;
             }
             catch (Exception e)
             {
