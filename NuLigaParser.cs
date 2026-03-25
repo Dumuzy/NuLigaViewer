@@ -111,14 +111,14 @@ namespace NuLigaViewer
                 return;
             }
 
-            var teamDoc = web.Load(newTeam.TeamUrl);
-            newTeam.GameDays = ParseGameDays(teamDoc, newTeam.GameDayReportLoaded, league);
-            newTeam.TeamPlayers = ParsePlayers(teamDoc, newTeam.Name, newTeam.GameDays?.Count ?? numberOfTeams - 1);
+            var resultSetList = TryLoadWebResourceThreeTimes(web, newTeam.TeamUrl, "//table[@class='result-set']");
+
+            newTeam.GameDays = ParseGameDays(resultSetList, newTeam.GameDayReportLoaded, league);
+            newTeam.TeamPlayers = ParsePlayers(resultSetList, newTeam.Name, newTeam.GameDays?.Count ?? numberOfTeams - 1);
         }
 
-        public static List<TeamPairing>? ParseGameDays(HtmlDocument doc, Action<TeamPairing> gameDayReportLoaded, League league)
+        private static List<TeamPairing>? ParseGameDays(HtmlNodeCollection? resultSetList, Action<TeamPairing> gameDayReportLoaded, League league)
         {
-            var resultSetList = doc.DocumentNode.SelectNodes("//table[@class='result-set']");
             if (resultSetList == null || resultSetList.Count < 2)
             {
                 var errorReason = resultSetList == null ? "resultSetList is null" : "resultSetList's count < 2";
@@ -168,17 +168,16 @@ namespace NuLigaViewer
             await Task.Run(() =>
             {
                 var web = new HtmlWeb();
-                var doc = web.Load(teamPairing.ReportUrl);
-                teamPairing.Report = ParseGameReport(doc, teamPairing);
+                var resultSetList = TryLoadWebResourceThreeTimes(web, teamPairing.ReportUrl, "//table[@class='result-set']");
+                teamPairing.Report = ParseGameReport(resultSetList, teamPairing);
 
                 gameDayReportLoaded(teamPairing);
                 TeamPairingReportLoadedForGui?.Invoke(league, teamPairing);
             });
         }
 
-        public static GameReport? ParseGameReport(HtmlDocument doc, TeamPairing teamPairing)
+        private static GameReport? ParseGameReport(HtmlNodeCollection? resultSetList, TeamPairing teamPairing)
         {
-            var resultSetList = doc.DocumentNode.SelectNodes("//table[@class='result-set']");
             if (resultSetList == null || resultSetList.Count < 1)
             {
                 var errorReason = resultSetList == null ? "resultSetList is null" : "resultSetList's count < 1";
@@ -216,9 +215,8 @@ namespace NuLigaViewer
             return new GameReport { Pairings = pairings };
         }
 
-        public static List<Player>? ParsePlayers(HtmlDocument doc, string teamName, int numberOfGameDays)
+        private static List<Player>? ParsePlayers(HtmlNodeCollection? resultSetList, string teamName, int numberOfGameDays)
         {
-            var resultSetList = doc.DocumentNode.SelectNodes("//table[@class='result-set']");
             if (resultSetList == null || resultSetList.Count < 3)
             {
                 var errorReason = resultSetList == null ? "resultSetList is null" : "resultSetList's count < 3";
@@ -252,6 +250,29 @@ namespace NuLigaViewer
             }
 
             return players;
+        }
+
+        private static HtmlNodeCollection? TryLoadWebResourceThreeTimes(HtmlWeb web, string url, string nodeRequest)
+        {
+            for (var attempt = 1; attempt <= 3; attempt++)
+            {
+                try
+                {
+                    var teamDoc = web.Load(url);
+                    var resultSetList = teamDoc.DocumentNode.SelectNodes(nodeRequest);
+                    if (resultSetList != null)
+                    {
+                        return resultSetList;
+                    }
+                    Thread.Sleep(10);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Attempt {attempt} to load {url} failed: {ex.Message}");
+                }
+            }
+
+            return null;
         }
     }
 }
