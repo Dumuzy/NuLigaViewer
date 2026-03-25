@@ -1,50 +1,14 @@
-using NuLigaViewer.Data;
 using NuLigaViewer.ViewModels;
 
 namespace NuLigaViewer.Pages
 {
-    public partial class GameDayPage : ContentPage, IQueryAttributable
+    public partial class GameDayPage : ContentPage
     {
         public GameDayPage()
         {
             InitializeComponent();
-        }
 
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
-        {
-            string? url = null;
-            string? name = null;
-
-            if (query.TryGetValue("leagueUrl", out var urlObj) && urlObj is string u)
-            {
-                url = Uri.UnescapeDataString(u);
-            }
-
-            if (query.TryGetValue("leagueName", out var nameObj) && nameObj is string n)
-            {
-                name = Uri.UnescapeDataString(n);
-            }
-
-            if (string.IsNullOrWhiteSpace(url) && !string.IsNullOrWhiteSpace(NavigationState.LastLeagueUrl))
-            {
-                url = NavigationState.LastLeagueUrl;
-            }
-
-            if (string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(NavigationState.LastLeagueName))
-            {
-                name = NavigationState.LastLeagueName;
-            }
-
-            if (!string.IsNullOrWhiteSpace(url))
-            {
-                var league = new League
-                {
-                    Url = url,
-                    Name = name ?? string.Empty
-                };
-
-                BindingContext = LeagueViewModel.GetOrCreate(league);
-            }
+            BindingContext = NavigationState.SelectedLeagueViewModel;
         }
 
         async void OnBackButtonClicked(object? sender, EventArgs e)
@@ -52,7 +16,7 @@ namespace NuLigaViewer.Pages
             await Shell.Current.GoToAsync($"//home");
         }
 
-        async void OnTeamSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        public async void OnTeamSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             var selectedTeamPairing = e.CurrentSelection.FirstOrDefault() as TeamPairingViewModel;
             if (selectedTeamPairing is null)
@@ -65,10 +29,9 @@ namespace NuLigaViewer.Pages
                 cv.SelectedItem = null;
             }
 
-            var leagueName = Uri.EscapeDataString(NavigationState.LastLeagueName ?? string.Empty);
             var homeTeam = Uri.EscapeDataString(selectedTeamPairing.HeimMannschaft ?? string.Empty);
             var guestTeam = Uri.EscapeDataString(selectedTeamPairing.GastMannschaft ?? string.Empty);
-            await Shell.Current.GoToAsync($"teampairing?leagueName={leagueName}&homeTeam={homeTeam}&guestTeam={guestTeam}");
+            await Shell.Current.GoToAsync($"teampairing?homeTeam={homeTeam}&guestTeam={guestTeam}");
         }
     }
 }

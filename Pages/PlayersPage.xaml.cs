@@ -11,10 +11,9 @@ namespace NuLigaViewer.Pages
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            if (query.TryGetValue("leagueName", out var nameObj) && nameObj is string leagueName)
+            if (query.TryGetValue("teamName", out var nameObj) && nameObj is string teamName)
             {
-                var leagueVm = LeagueViewModel.Get(leagueName);
-                var teamVm = leagueVm?.Teams.FirstOrDefault(team => team.Name == query["teamName"]?.ToString());
+                var teamVm = NavigationState.SelectedLeagueViewModel.Teams.FirstOrDefault(team => team.Name == teamName);
 
                 BindingContext = teamVm != null ? teamVm : null;
             }
@@ -33,9 +32,8 @@ namespace NuLigaViewer.Pages
                 cv.SelectedItem = null;
             }
 
-            var leagueName = Uri.EscapeDataString(NavigationState.LastLeagueName ?? string.Empty);
             var playerName = Uri.EscapeDataString(playerRow.Spieler ?? string.Empty);
-            await Shell.Current.GoToAsync($"playerdetails?leagueName={leagueName}&playerName={playerName}");
+            await Shell.Current.GoToAsync($"playerdetails?playerName={playerName}");
         }
     }
 }

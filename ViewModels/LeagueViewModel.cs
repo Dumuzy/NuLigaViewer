@@ -7,40 +7,26 @@ namespace NuLigaViewer.ViewModels
 {
     public class LeagueViewModel : INotifyPropertyChanged
     {
-        private static readonly ConcurrentDictionary<string, LeagueViewModel> _instances = new();
-
-        public static LeagueViewModel GetOrCreate(League league)
+        public LeagueViewModel()
         {
-            if (league == null) throw new ArgumentNullException(nameof(league));
-
-            var key = (league.Name ?? string.Empty).Trim();
-            return _instances.GetOrAdd(key, _ => new LeagueViewModel(league));
-        }
-
-        public static LeagueViewModel? Get(string leagueName)
-        {
-            _instances.TryGetValue(leagueName, out LeagueViewModel? league);
-            return league;
-        }
-
-        public LeagueViewModel(League league)
-        {
-            League = league ?? throw new ArgumentNullException(nameof(league));
-
             NuLigaParser.TeamPairingReportLoadedForGui += NuLigaParser_TeamPairingReportLoaded;
-
-            _ = LoadTeamsAsync();
         }
-        public League League { get; }
 
-        public ObservableCollection<TeamViewModel> Teams { get; } = new();
-        public ObservableCollection<TeamPairingViewModel> LastGameDay { get; } = new();
-        public string? LastGameTitle => LastGameDay.Any() ? LastGameDay.First().Title : null;
+        private static readonly ConcurrentDictionary<string, Team[]> _cachedLeagues = new();
 
-        public ObservableCollection<TopTenPlayerViewModel> TopTenPlayer { get; } = new();
-
-        public List<TeamPairing> AllAvailableTeamPairings => Teams.SelectMany(t => t.GameDays ?? []).Distinct().ToList();
-        public List<Player> AllAvailablePlayer => Teams.Where(x => x.Players != null).SelectMany(x => x.Players!).ToList();
+        private League? _league;
+        public League? League
+        {
+            get => _league;
+            set
+            {
+                if (_league != value)
+                {
+                    _league = value;
+                    OnPropertyChanged(nameof(League));
+                }
+            }
+        }
 
         private bool _isLoading;
         public bool IsLoading
@@ -53,6 +39,100 @@ namespace NuLigaViewer.ViewModels
                     _isLoading = value;
                     OnPropertyChanged(nameof(IsLoading));
                 }
+            }
+        }
+
+        public ObservableCollection<TeamViewModel> Teams { get; } = new();
+        public ObservableCollection<TeamPairingViewModel> LastGameDay { get; } = new();
+        public string? LastGameTitle => LastGameDay.Any() ? LastGameDay.First().Title : null;
+
+        public ObservableCollection<TopTenPlayerViewModel> TopTenPlayer { get; } = new();
+
+        public List<TeamPairing> AllAvailableTeamPairings => Teams.SelectMany(t => t.GameDays ?? []).Distinct().ToList();
+        public List<Player> AllAvailablePlayer => Teams.Where(x => x.Players != null).SelectMany(x => x.Players!).ToList();
+
+        public async Task LoadLeagueAsync(League league)
+        {
+            if (league == null || string.IsNullOrWhiteSpace(league.Url) || string.IsNullOrWhiteSpace(league.Name))
+            {
+                return;
+            }
+
+            League = league;
+
+            if (_cachedLeagues.TryGetValue(league.Name, out var cachedTeams))
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    RefreshTeams(cachedTeams);
+                });
+                return;
+            }
+
+            try
+            {
+                IsLoading = true;
+
+                var teams = await Task.Run(() => NuLigaParser.ParseTeams(league) ?? []);
+
+                _cachedLeagues.TryAdd(league.Name, teams);
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    RefreshTeams(teams);
+                });
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.ToString());
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private void RefreshTeams(Team[] teams)
+        {
+            if (!_cachedLeagues.TryGetValue(League?.Name ?? string.Empty, out var cachedTeams) || cachedTeams != teams)
+            {
+                return;
+            }
+
+            try
+            {
+                var lastGameDay = NuLigaTransformer.TransformTeamsToLastGameDay(teams);
+                var allPlayers = NuLigaTransformer.TransformTeamsToAllPlayerList(teams);
+
+                Teams.Clear();
+                foreach (var team in teams)
+                {
+                    Teams.Add(new TeamViewModel(team));
+                }
+
+                LastGameDay.Clear();
+                foreach (var teamPairing in lastGameDay)
+                {
+                    LastGameDay.Add(new TeamPairingViewModel(teamPairing));
+                }
+
+                TopTenPlayer.Clear();
+                var rang = 1;
+                foreach (var player in allPlayers.Take(10))
+                {
+                    var ttpVm = new TopTenPlayerViewModel(player)
+                    {
+                        Rang = rang
+                    };
+                    TopTenPlayer.Add(ttpVm);
+                    rang++;
+                }
+
+                OnPropertyChanged(nameof(LastGameTitle));
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.ToString());
             }
         }
 
@@ -85,66 +165,7 @@ namespace NuLigaViewer.ViewModels
             _ = SortTeamsAsync();
         }
 
-        private async Task LoadTeamsAsync()
-        {
-            if (League == null || string.IsNullOrWhiteSpace(League.Url))
-            {
-                return;
-            }
-
-            if (Teams.Count > 0)
-            {
-                return;
-            }
-
-            try
-            {
-                IsLoading = true;
-
-                var teams = await Task.Run(() => NuLigaParser.ParseTeams(League) ?? []);
-                var lastGameDay = NuLigaTransformer.TransformTeamsToLastGameDay(teams);
-                var allPlayers = NuLigaTransformer.TransformTeamsToAllPlayerList(teams);
-
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    Teams.Clear();
-                    foreach (var team in teams)
-                    {
-                        Teams.Add(new TeamViewModel(team));
-                    }
-
-                    LastGameDay.Clear();
-                    foreach (var teamPairing in lastGameDay)
-                    {
-                        LastGameDay.Add(new TeamPairingViewModel(teamPairing));
-                    }
-
-                    TopTenPlayer.Clear();
-                    var rang = 1;
-                    foreach (var player in allPlayers.Take(10))
-                    {
-                        var ttpVm = new TopTenPlayerViewModel(player)
-                        {
-                            Rang = rang
-                        };
-                        TopTenPlayer.Add(ttpVm);
-                        rang++;
-                    }
-
-                    OnPropertyChanged(nameof(LastGameTitle));
-                });
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e.ToString());
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        public async Task SortTeamsAsync()
+        private async Task SortTeamsAsync()
         {
             var vms = Teams.Select(t => t).ToList();
 

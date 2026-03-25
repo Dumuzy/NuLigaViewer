@@ -14,14 +14,14 @@
             Route="home">
     </ShellContent>
     <TabBar Route="league">
-        <ShellContent Title="Tabelle"
-                          ContentTemplate="{DataTemplate pages:LeaguePage}"
-                          Route="table" />
-        <ShellContent Title="Letzter Spieltag"
-                          ContentTemplate="{DataTemplate pages:GameDayPage}"
-                          Route="lastgameday" />
-        <ShellContent Title="Top 10"
-                          ContentTemplate="{DataTemplate pages:TopTenPage}"
-                          Route="topten" />
+        <Tab x:Name="LeagueTab" Route="table" Title="Tabelle">
+            <ShellContent ContentTemplate="{DataTemplate pages:LeaguePage}" />
+        </Tab>
+        <Tab x:Name="LastGameDayTab" Route="lastgameday" Title="Letzter Spieltag">
+            <ShellContent ContentTemplate="{DataTemplate pages:GameDayPage}" />
+        </Tab>
+        <Tab x:Name="TopTenTab" Route="topten" Title="Top 10">
+            <ShellContent ContentTemplate="{DataTemplate pages:TopTenPage}" />
+        </Tab>
     </TabBar>
 </Shell>

@@ -1,4 +1,6 @@
-﻿namespace NuLigaViewer
+﻿using NuLigaViewer.Data;
+
+namespace NuLigaViewer
 {
     public partial class MainPage : ContentPage
     {
@@ -20,10 +22,10 @@
             BindingContext = new ViewModels.LeaguesViewModel(leagues);
         }
 
-        async void OnLeagueSelected(object sender, SelectionChangedEventArgs e)
+        public async void OnLeagueSelected(object sender, SelectionChangedEventArgs e)
         {
-            var league = (e.CurrentSelection?.FirstOrDefault() as Data.League);
-            if (league == null)
+            var selectedLeague = (e.CurrentSelection?.FirstOrDefault() as League);
+            if (selectedLeague == null)
             {
                 return;
             }
@@ -33,13 +35,8 @@
                 cv.SelectedItem = null;
             }
 
-            var url = Uri.EscapeDataString(league.Url ?? string.Empty);
-            var name = Uri.EscapeDataString(league.Name ?? string.Empty);
-
-            NavigationState.LastLeagueUrl = league.Url;
-            NavigationState.LastLeagueName = league.Name;
-
-            await Shell.Current.GoToAsync($"//league/table?leagueUrl={url}&leagueName={name}");
+            _ = NavigationState.SelectedLeagueViewModel.LoadLeagueAsync(selectedLeague);
+            await Shell.Current.GoToAsync($"//league/table");
         }
     }
 }

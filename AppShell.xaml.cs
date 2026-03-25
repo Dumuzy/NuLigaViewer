@@ -9,32 +9,53 @@
             Routing.RegisterRoute("teampairing", typeof(Pages.TeamPairingPage));
             Routing.RegisterRoute("teamplayers", typeof(Pages.PlayersPage));
             Routing.RegisterRoute("playerdetails", typeof(Pages.PlayerPage));
-
-            Navigated += AppShell_Navigated;
         }
 
-        private async void AppShell_Navigated(object? sender, ShellNavigatedEventArgs e)
+        protected async override void OnNavigating(ShellNavigatingEventArgs e)
         {
-            try
+            base.OnNavigating(e);
+
+            if (e.Source != ShellNavigationSource.ShellSectionChanged || e.Current is null || e.Target is null)
             {
-                var location = e.Current?.Location?.ToString() ?? string.Empty;
-                if (string.IsNullOrEmpty(location))
-                    return;
-
-                if ((location.EndsWith("league/table", StringComparison.OrdinalIgnoreCase)
-                    || location.EndsWith("league/lastgameday", StringComparison.OrdinalIgnoreCase)
-                    || location.EndsWith("league/topten", StringComparison.OrdinalIgnoreCase))
-                    && !string.IsNullOrWhiteSpace(NavigationState.LastLeagueUrl))
-                {
-                    var trimmed = location.TrimStart('/');
-                    var route = $"//{trimmed}?leagueUrl={Uri.EscapeDataString(NavigationState.LastLeagueUrl)}&leagueName={Uri.EscapeDataString(NavigationState.LastLeagueName ?? string.Empty)}";
-
-                    await Shell.Current.GoToAsync(route);
-                }
+                return;
             }
-            catch (Exception ex)
+
+            var targetPath = e.Target.Location?.ToString() ?? string.Empty;
+            var levels = targetPath.Trim('/').Count('/') - 1;
+
+            if (levels < 1)
             {
-                System.Diagnostics.Debug.WriteLine(ex);
+                return;
+            }
+
+            if (!(targetPath.StartsWith("//league/table")
+                || targetPath.StartsWith("//league/lastgameday")
+                || targetPath.StartsWith("//league/topten")))
+            {
+                return;
+            }
+
+            if (e.Cancel())
+            {
+                try
+                {
+                    if (targetPath.StartsWith("//league/table"))
+                    {
+                        await LeagueTab.Navigation.PopToRootAsync();
+                    }
+                    else if (targetPath.StartsWith("//league/lastgameday"))
+                    {
+                        await LastGameDayTab.Navigation.PopToRootAsync();
+                    }
+                    else if (targetPath.StartsWith("//league/topten"))
+                    {
+                        await TopTenTab.Navigation.PopToRootAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex);
+                }
             }
         }
     }

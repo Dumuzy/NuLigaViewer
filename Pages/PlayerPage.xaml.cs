@@ -11,10 +11,9 @@ namespace NuLigaViewer.Pages
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            if (query.TryGetValue("leagueName", out var nameObj) && nameObj is string leagueName)
+            if (query.TryGetValue("playerName", out var nameObj) && nameObj is string playerName)
             {
-                var leagueVm = LeagueViewModel.Get(leagueName);
-                var player = leagueVm?.AllAvailablePlayer.FirstOrDefault(player => player.Name == query["playerName"]?.ToString());
+                var player = NavigationState.SelectedLeagueViewModel.AllAvailablePlayer.FirstOrDefault(player => player.Name == playerName);
 
                 BindingContext = player != null ? new PlayerRow
                 {
