@@ -1,3 +1,5 @@
+using NuLigaViewer.ViewModels;
+
 namespace NuLigaViewer.Pages
 {
     public partial class TopTenPage : ContentPage
@@ -14,8 +16,21 @@ namespace NuLigaViewer.Pages
             await Shell.Current.GoToAsync($"//home");
         }
 
-        public async void OnTeamSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        async void OnPlayerSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
+            var playerRow = e.CurrentSelection.FirstOrDefault() as TopTenPlayerViewModel;
+            if (playerRow is null)
+            {
+                return;
+            }
+
+            if (sender is CollectionView cv)
+            {
+                cv.SelectedItem = null;
+            }
+
+            var playerName = Uri.EscapeDataString(playerRow.Name ?? string.Empty);
+            await Shell.Current.GoToAsync($"playerdetails?playerName={playerName}");
         }
     }
 }

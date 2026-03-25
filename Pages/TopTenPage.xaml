@@ -43,7 +43,7 @@
         <CollectionView Grid.Row="2"
                         ItemsSource="{Binding TopTenPlayer}"
                         SelectionMode="Single"
-                        SelectionChanged="OnTeamSelectionChanged">
+                        SelectionChanged="OnPlayerSelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border Margin="2" Padding="6">

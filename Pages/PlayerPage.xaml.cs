@@ -1,3 +1,4 @@
+using NuLigaViewer.Data;
 using NuLigaViewer.ViewModels;
 
 namespace NuLigaViewer.Pages
@@ -24,6 +25,23 @@ namespace NuLigaViewer.Pages
                     PlayerGameDayInfos = player.PlayerInfoPerGameDay?.Where(x => x != null).ToList() ?? []
                 } : null;
             }
+        }
+
+        async void OnPlayerSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            var playerInfo = e.CurrentSelection.FirstOrDefault() as PlayerGameDayInfo;
+            if (playerInfo is null)
+            {
+                return;
+            }
+
+            if (sender is CollectionView cv)
+            {
+                cv.SelectedItem = null;
+            }
+
+            var playerName = Uri.EscapeDataString(playerInfo.Opponent ?? string.Empty);
+            await Shell.Current.GoToAsync($"playerdetails?playerName={playerName}");
         }
     }
 }
