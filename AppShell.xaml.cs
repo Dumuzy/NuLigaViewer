@@ -15,7 +15,7 @@
         {
             base.OnNavigating(e);
 
-            if (e.Source != ShellNavigationSource.ShellSectionChanged || e.Current is null || e.Target is null)
+            if (e.Source != ShellNavigationSource.ShellSectionChanged || e.Current is null || e.Target is null || e.Target.Location == _pageBeingPopped?.Location)
             {
                 return;
             }
@@ -58,5 +58,51 @@
                 }
             }
         }
+
+        protected override void OnNavigated(ShellNavigatedEventArgs args)
+        {
+            base.OnNavigated(args);
+            if (Uri == null || args.Previous == null)
+            {
+                return;
+            }
+
+            if (args.Current != null && args.Current.Location.ToString() == "//home")
+            {
+                Uri.Clear();
+                return;
+            }
+
+            if (_pageBeingPopped == null || _pageBeingPopped.Location != args.Current?.Location)
+            {
+                Uri.Push(args.Previous);
+                _pageBeingPopped = null;
+            }
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            if (Uri != null && Uri.Count > 0)
+            {
+                Dispatcher.Dispatch(async () =>
+                {
+                    await GoBackInStack();
+                });
+                return true;
+            }
+            return base.OnBackButtonPressed();
+        }
+
+        public async static Task GoBackInStack()
+        {
+            if (Uri != null && Uri.Count > 0)
+            {
+                var previousPage = Uri.Pop();
+                _pageBeingPopped = previousPage;
+                await Shell.Current.GoToAsync(previousPage);
+            }
+        }
+        private static Stack<ShellNavigationState> Uri { get; } = new Stack<ShellNavigationState>();
+        private static ShellNavigationState? _pageBeingPopped { get; set; }
     }
 }

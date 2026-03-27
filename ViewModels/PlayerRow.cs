@@ -1,10 +1,19 @@
 using NuLigaViewer.Data;
 using System.Data;
+using System.Windows.Input;
 
 namespace NuLigaViewer.ViewModels
 {
     public class PlayerRow
     {
+        public PlayerRow()
+        {
+            _backButtonCommand = new RelayCommand(AppShell.GoBackInStack, () => true);
+        }
+
+        private readonly RelayCommand _backButtonCommand;
+        public ICommand BackButtonCommand => _backButtonCommand;
+
         public int Brett { get; set; }
         public string Spieler { get; set; } = string.Empty;
         public int? DWZ { get; set; }
@@ -30,7 +39,7 @@ namespace NuLigaViewer.ViewModels
             var bremszuschlag = 0;
             if (DWZ < 1300 && PointsSum <= SumOfExpectedPoints)
             {
-               bremszuschlag = (int)Math.Round((Math.Pow(Math.E, (1300 - DWZ ?? 0) / 150.0) - 1));
+                bremszuschlag = (int)Math.Round((Math.Pow(Math.E, (1300 - DWZ ?? 0) / 150.0) - 1));
             }
             var entwicklungskoeffizient = grundwert + bremszuschlag;
 

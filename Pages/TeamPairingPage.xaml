@@ -4,6 +4,10 @@
              x:Class="NuLigaViewer.Pages.TeamPairingPage"
              Title="{Binding Title}">
 
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding BackButtonCommand}" />
+    </Shell.BackButtonBehavior>
+
     <Grid Padding="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

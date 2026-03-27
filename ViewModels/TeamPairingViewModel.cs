@@ -1,5 +1,6 @@
 using NuLigaViewer.Data;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace NuLigaViewer.ViewModels
 {
@@ -9,8 +10,13 @@ namespace NuLigaViewer.ViewModels
 
         public TeamPairingViewModel(TeamPairing teamPairing)
         {
+            _backButtonCommand = new RelayCommand(AppShell.GoBackInStack, () => true);
+
             _teamPairing = teamPairing ?? throw new ArgumentNullException(nameof(teamPairing));
         }
+
+        private readonly RelayCommand _backButtonCommand;
+        public ICommand BackButtonCommand => _backButtonCommand;
 
         public int Runde => _teamPairing.Runde;
         public DateTime Datum => _teamPairing.Datum;
