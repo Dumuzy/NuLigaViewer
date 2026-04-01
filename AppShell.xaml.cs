@@ -7,9 +7,14 @@
             InitializeComponent();
 
             Routing.RegisterRoute("teampairing", typeof(Pages.TeamPairingPage));
-            Routing.RegisterRoute("teamplayers", typeof(Pages.PlayersPage));
             Routing.RegisterRoute("playerdetails", typeof(Pages.PlayerPage));
         }
+
+        private const string _lastGameDayRoute = "//league/lastgameday";
+        private const string _toptenRoute = "//league/topten";
+        private const string _gamedaysRoute = "//team/gamedays";
+        private const string _playersRoute = "//team/players";
+        private const string _clubplayersRoute = "//team/clubplayers";
 
         protected async override void OnNavigating(ShellNavigatingEventArgs e)
         {
@@ -28,9 +33,11 @@
                 return;
             }
 
-            if (!(targetPath.StartsWith("//league/table")
-                || targetPath.StartsWith("//league/lastgameday")
-                || targetPath.StartsWith("//league/topten")))
+            if (!(targetPath.StartsWith(_lastGameDayRoute)
+                || targetPath.StartsWith(_toptenRoute)
+                || targetPath.StartsWith(_gamedaysRoute)
+                || targetPath.StartsWith(_playersRoute)
+                || targetPath.StartsWith(_clubplayersRoute)))
             {
                 return;
             }
@@ -39,22 +46,50 @@
             {
                 try
                 {
-                    if (targetPath.StartsWith("//league/table"))
+                    if (targetPath.StartsWith(_lastGameDayRoute))
                     {
-                        await LeagueTab.Navigation.PopToRootAsync();
+                        ClearStackFromTabSubpages(_lastGameDayRoute);
+                        await Shell.Current.GoToAsync(_lastGameDayRoute);
                     }
-                    else if (targetPath.StartsWith("//league/lastgameday"))
+                    else if (targetPath.StartsWith(_toptenRoute))
                     {
-                        await LastGameDayTab.Navigation.PopToRootAsync();
+                        ClearStackFromTabSubpages(_toptenRoute);
+                        await Shell.Current.GoToAsync(_toptenRoute);
                     }
-                    else if (targetPath.StartsWith("//league/topten"))
+                    else if (targetPath.StartsWith(_gamedaysRoute))
                     {
-                        await TopTenTab.Navigation.PopToRootAsync();
+                        ClearStackFromTabSubpages(_gamedaysRoute);
+                        await Shell.Current.GoToAsync(_gamedaysRoute);
+                    }
+                    else if (targetPath.StartsWith(_playersRoute))
+                    {
+                        ClearStackFromTabSubpages(_playersRoute);
+                        await Shell.Current.GoToAsync(_playersRoute);
+                    }
+                    else if (targetPath.StartsWith(_clubplayersRoute))
+                    {
+                        ClearStackFromTabSubpages(_clubplayersRoute);
+                        await Shell.Current.GoToAsync(_clubplayersRoute);
                     }
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine(ex);
+                }
+            }
+        }
+
+        private static void ClearStackFromTabSubpages(string baseRoute)
+        {
+            var reversedUris = Uri.ToArray();
+            Uri.Clear();
+
+            for (var i = reversedUris.Length - 1; i >= 0; i--)
+            {
+                var uriString = reversedUris[i].Location.ToString();
+                if (!uriString.StartsWith(baseRoute) || uriString.Equals(baseRoute))
+                {
+                    Uri.Push(reversedUris[i]);
                 }
             }
         }

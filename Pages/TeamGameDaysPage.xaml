@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NuLigaViewer.Pages.TeamGameDaysPage"
+             Title="{Binding Name}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Zurück zur Tabelle"
+                     Priority="0"
+                     Order="Primary"
+                     Clicked="OnBackButtonClicked" />
+    </ContentPage.ToolbarItems>
+
+    <Grid Padding="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0" ColumnSpacing="1" Padding="6" BackgroundColor="{DynamicResource PageBackgroundColor}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="45" />
+                <ColumnDefinition Width="*" />
+				<ColumnDefinition Width="50" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="40" />
+				<ColumnDefinition Width="60" />
+			</Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0" Text="Runde" FontAttributes="Bold" VerticalTextAlignment="Center" />
+            <Label Grid.Column="1" Text="Heim" FontAttributes="Bold" VerticalTextAlignment="Center" />
+			<Label Grid.Column="2" Text="DWZ" FontAttributes="Bold" VerticalTextAlignment="Center" />
+			<Label Grid.Column="3" Text="Gast" FontAttributes="Bold" VerticalTextAlignment="Center" />
+			<Label Grid.Column="4" Text="DWZ" FontAttributes="Bold" VerticalTextAlignment="Center" />
+			<Label Grid.Column="5" Text="Ergebnis" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+		</Grid>
+
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding GameDays}"
+                        SelectionMode="Single"
+                        SelectionChanged="OnSelectedTeamPairingChanged">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="2" Padding="6">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+
+                        <Grid ColumnSpacing="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="45" />
+                                <ColumnDefinition Width="*" />
+								<ColumnDefinition Width="50" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="40" />
+								<ColumnDefinition Width="60" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Column="0" Text="{Binding Runde}" VerticalTextAlignment="Center" />
+                            <Label Grid.Column="1" Text="{Binding HeimMannschaft}" VerticalTextAlignment="Center" />
+							<Label Grid.Column="2" Text="{Binding HeimMannschaftDWZ}" VerticalTextAlignment="Center" />
+							<Label Grid.Column="3" Text="{Binding GastMannschaft}" VerticalTextAlignment="Center" />
+							<Label Grid.Column="4" Text="{Binding GastMannschaftDWZ}" VerticalTextAlignment="Center" />
+							<Label Grid.Column="5" Text="{Binding BrettPunkte}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

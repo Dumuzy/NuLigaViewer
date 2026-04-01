@@ -2,21 +2,18 @@ using NuLigaViewer.ViewModels;
 
 namespace NuLigaViewer.Pages
 {
-    public partial class PlayersPage : ContentPage, IQueryAttributable
+    public partial class PlayersPage : ContentPage
     {
         public PlayersPage()
         {
             InitializeComponent();
+
+            BindingContext = NavigationState.SelectedTeamOverview;
         }
 
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        async void OnBackButtonClicked(object? sender, EventArgs e)
         {
-            if (query.TryGetValue("teamName", out var nameObj) && nameObj is string teamName)
-            {
-                var teamVm = NavigationState.SelectedLeagueViewModel.Teams.FirstOrDefault(team => team.Name == teamName);
-
-                BindingContext = teamVm != null ? teamVm : null;
-            }
+            await Shell.Current.GoToAsync($"//league/table");
         }
 
         async void OnPlayerSelectionChanged(object? sender, SelectionChangedEventArgs e)

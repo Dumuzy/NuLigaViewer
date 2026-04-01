@@ -2,7 +2,6 @@ using NuLigaViewer.Data;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Windows.Input;
 
 namespace NuLigaViewer.ViewModels
 {
@@ -12,16 +11,12 @@ namespace NuLigaViewer.ViewModels
 
         public TeamViewModel(Team team)
         {
-            _backButtonCommand = new RelayCommand(AppShell.GoBackInStack, () => true);
-
             _team = team ?? throw new ArgumentNullException(nameof(team));
             Rank = _team.Rang;
             BuildPlayerRows();
         }
 
-        private readonly RelayCommand _backButtonCommand;
-        public ICommand BackButtonCommand => _backButtonCommand;
-
+        public string? Url => _team.TeamUrl;
         public int Rank { get; set; }
         public string Name => _team.Name;
         public int Games => _team.Spiele;
@@ -30,6 +25,7 @@ namespace NuLigaViewer.ViewModels
         public double AverageDwz => _team.DWZ;
         public double BerlinTieBreak => _team.BW;
         public bool AllReportsLoaded => _team.AllReportsLoaded;
+
         public ObservableCollection<PlayerRow> PlayerRows { get; } = new();
         public IReadOnlyList<string> RoundHeaders { get; private set; } = Array.Empty<string>();
 
@@ -114,7 +110,6 @@ namespace NuLigaViewer.ViewModels
             }
 
             OnPropertyChanged(nameof(RoundHeaders));
-            OnPropertyChanged(nameof(PlayerRows));
         }
 
         public void Refresh()

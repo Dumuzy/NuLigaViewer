@@ -62,9 +62,12 @@ namespace NuLigaViewer.ViewModels
 
             if (_cachedLeagues.TryGetValue(league.Name, out var cachedTeams))
             {
+                SortTeams(ref cachedTeams);
+
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     RefreshTeams(cachedTeams);
+                    ColorTeams(Teams);
                 });
                 return;
             }
@@ -112,9 +115,11 @@ namespace NuLigaViewer.ViewModels
                 var allPlayers = NuLigaTransformer.TransformTeamsToAllPlayerList(teams);
 
                 Teams.Clear();
+                var index = 1;
                 foreach (var team in teams)
                 {
-                    Teams.Add(new TeamViewModel(team));
+                    Teams.Add(new TeamViewModel(team) { Rank = index });
+                    index++;
                 }
 
                 LastGameDay.Clear();
@@ -177,7 +182,8 @@ namespace NuLigaViewer.ViewModels
         {
             var vms = Teams.Select(t => t).ToList();
 
-            SortAndColorTeams(ref vms);
+            SortTeams(ref vms);
+            ColorTeams(vms);
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
@@ -192,7 +198,7 @@ namespace NuLigaViewer.ViewModels
             });
         }
 
-        private void SortAndColorTeams(ref List<TeamViewModel> vms)
+        private static void SortTeams(ref List<TeamViewModel> vms)
         {
             vms.Sort((a, b) =>
             {
@@ -209,20 +215,42 @@ namespace NuLigaViewer.ViewModels
                 }
                 return b.BerlinTieBreak.CompareTo(a.BerlinTieBreak);
             });
+        }
 
-            for (var i = 0; i < vms.Count; i++)
+        private static void SortTeams(ref Team[] teams)
+        {
+            teams.Sort((a, b) =>
+            {
+                int pointsComparison = b.Punkte.CompareTo(a.Punkte);
+                if (pointsComparison != 0)
+                {
+                    return pointsComparison;
+                }
+
+                int bpComparison = b.BP.CompareTo(a.BP);
+                if (bpComparison != 0)
+                {
+                    return bpComparison;
+                }
+                return b.BW.CompareTo(a.BW);
+            });
+        }
+
+        private static void ColorTeams(IList<TeamViewModel> teams)
+        {
+            for (var i = 0; i < teams.Count; i++)
             {
                 if (i == 0)
                 {
-                    vms[i].RowColor = Colors.Green;
+                    teams[i].RowColor = Colors.Green;
                 }
-                else if (i >= Math.Max(0, vms.Count - 2))
+                else if (i >= Math.Max(0, teams.Count - 2))
                 {
-                    vms[i].RowColor = Colors.Red;
+                    teams[i].RowColor = Colors.Red;
                 }
                 else
                 {
-                    vms[i].RowColor = Application.Current?.RequestedTheme == AppTheme.Dark ? Colors.White : Colors.Black;
+                    teams[i].RowColor = Application.Current?.RequestedTheme == AppTheme.Dark ? Colors.White : Colors.Black;
                 }
             }
         }

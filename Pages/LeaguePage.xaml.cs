@@ -27,8 +27,8 @@ namespace NuLigaViewer.Pages
                 cv.SelectedItem = null;
             }
 
-            var teamName = Uri.EscapeDataString(teamVm.Name ?? string.Empty);
-            await Shell.Current.GoToAsync($"teamplayers?teamName={teamName}");
+            _ = NavigationState.SelectedTeamOverview.LoadClubPlayersAsync(teamVm);
+            await Shell.Current.GoToAsync($"//team/gamedays");
         }
     }
 }

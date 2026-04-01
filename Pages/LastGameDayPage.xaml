@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="NuLigaViewer.Pages.GameDayPage"
+             x:Class="NuLigaViewer.Pages.LastGameDayPage"
              Title="{Binding League.Name}">
 
     <ContentPage.ToolbarItems>
@@ -42,7 +42,7 @@
         <CollectionView Grid.Row="2"
                         ItemsSource="{Binding LastGameDay}"
                         SelectionMode="Single"
-                        SelectionChanged="OnTeamSelectionChanged">
+                        SelectionChanged="OnSelectedTeamPairingChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border Margin="2" Padding="6">

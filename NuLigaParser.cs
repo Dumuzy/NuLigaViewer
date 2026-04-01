@@ -274,5 +274,66 @@ namespace NuLigaViewer
 
             return null;
         }
+
+        public static List<ClubPlayer> ParseAllClubPlayers(string? teamUrl)
+        {
+            if (string.IsNullOrEmpty(teamUrl))
+            {
+                return [];
+            }
+
+            var teamDoc = web.Load(teamUrl);
+            var teamInfoTable = teamDoc.DocumentNode.SelectNodes("//table[@class='result-set']")[0];
+            var teamMainPageUrl = urlRoot + teamInfoTable.SelectNodes("tr")[0].SelectNodes("th|td")[1].QuerySelector("a").Attributes["href"].Value;
+
+            var clubPage = web.Load(teamMainPageUrl);
+            var clubPageLinks = clubPage.DocumentNode.SelectNodes("//table")[0].SelectNodes("tr")[0].SelectNodes("th|td")[0].SelectNodes("ul")[0].SelectNodes("li");
+            var clubLineUpsUrl = urlRoot + clubPageLinks[2].QuerySelector("a").Attributes["href"].Value;
+
+            var clubLineUpsPage = web.Load(clubLineUpsUrl);
+            var lineUps = clubLineUpsPage.DocumentNode.SelectNodes("//table[@class='result-set']")[0].SelectNodes("tr");
+
+            var lineUpUrl = string.Empty;
+            for (var lineUpIndex = 0; lineUpIndex < lineUps.Count; lineUpIndex++)
+            {
+                var cells = lineUps[lineUpIndex].SelectNodes("th|td");
+
+                var lineUpFound = cells.Any(x => x.InnerHtml.Contains("Punktspielbetrieb")
+                                        && x.InnerHtml.Contains("2025/26")
+                                        && !x.InnerHtml.Contains("Senioren")
+                                        && !x.InnerHtml.Contains("Jugend")
+                                        && !x.InnerHtml.Contains("Pokal"));
+                if (lineUpFound && lineUpIndex + 2 < lineUps.Count)
+                {
+                    var lineUpRoute = lineUps[lineUpIndex + 2].SelectNodes("th|td")[1].QuerySelector("a").Attributes["href"].Value.Replace("&amp;", "&");
+                    lineUpUrl = urlRoot + lineUpRoute.TrimStart('/');
+                    break;
+                }
+            }
+
+            var lineUpPage = web.Load(lineUpUrl);
+            var playerRows = lineUpPage.DocumentNode.SelectNodes("//table[@class='result-set']")[0].SelectNodes("tr");
+            var clubPlayers = new List<ClubPlayer>();
+
+            // start with 1, skip headers in 0
+            for (var row = 1; row < playerRows.Count; row++)
+            {
+                var cells = playerRows[row].SelectNodes("th|td");
+
+                var dwz = int.TryParse(cells[1].InnerText, out var parsedDWZ) ? parsedDWZ : (int?)null;
+                var number = int.TryParse(cells[3].InnerText, out var parsedNumber) ? parsedNumber : (int?)null;
+
+                var player = new ClubPlayer
+                {
+                    Rang = int.Parse(cells[0].InnerText),
+                    DWZ = dwz,
+                    Name = cells[2].InnerText.Trim().TrimStart('\n').TrimEnd('\n').Trim(),
+                    Number = number,
+                    Status = cells[5].InnerText.Trim().TrimStart('\n').TrimEnd('\n').Trim()
+                };
+                clubPlayers.Add(player);
+            }
+            return clubPlayers;
+        }
     }
 }

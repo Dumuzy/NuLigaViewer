@@ -1,24 +1,24 @@
-using NuLigaViewer.ViewModels;
+using NuLigaViewer.Data;
 
 namespace NuLigaViewer.Pages
 {
-    public partial class GameDayPage : ContentPage
+    public partial class TeamGameDaysPage : ContentPage
     {
-        public GameDayPage()
+        public TeamGameDaysPage()
         {
             InitializeComponent();
 
-            BindingContext = NavigationState.SelectedLeagueViewModel;
+            BindingContext = NavigationState.SelectedTeamOverview;
         }
 
         async void OnBackButtonClicked(object? sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync($"//home");
+            await Shell.Current.GoToAsync($"//league/table");
         }
 
-        public async void OnTeamSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        public async void OnSelectedTeamPairingChanged(object? sender, SelectionChangedEventArgs e)
         {
-            var selectedTeamPairing = e.CurrentSelection.FirstOrDefault() as TeamPairingViewModel;
+            var selectedTeamPairing = e.CurrentSelection.FirstOrDefault() as TeamPairing;
             if (selectedTeamPairing is null)
             {
                 return;

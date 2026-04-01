@@ -18,10 +18,21 @@
             <ShellContent ContentTemplate="{DataTemplate pages:LeaguePage}" />
         </Tab>
         <Tab x:Name="LastGameDayTab" Route="lastgameday" Title="Letzter Spieltag">
-            <ShellContent ContentTemplate="{DataTemplate pages:GameDayPage}" />
+            <ShellContent ContentTemplate="{DataTemplate pages:LastGameDayPage}" />
         </Tab>
         <Tab x:Name="TopTenTab" Route="topten" Title="Top 10">
             <ShellContent ContentTemplate="{DataTemplate pages:TopTenPage}" />
+        </Tab>
+    </TabBar>
+    <TabBar Route="team">
+        <Tab x:Name="GameDaysTab" Route="gamedays" Title="Spieltage">
+            <ShellContent ContentTemplate="{DataTemplate pages:TeamGameDaysPage}" />
+        </Tab>
+        <Tab x:Name="PlayersTab" Route="players" Title="Spielereinsätze">
+            <ShellContent ContentTemplate="{DataTemplate pages:PlayersPage}" />
+        </Tab>
+        <Tab x:Name="ClubPlayersTab" Route="clubplayers" Title="Spielerliste">
+            <ShellContent ContentTemplate="{DataTemplate pages:ClubPlayersPage}" />
         </Tab>
     </TabBar>
 </Shell>
