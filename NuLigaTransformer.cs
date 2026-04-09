@@ -11,7 +11,7 @@ namespace NuLigaViewer
                 return [];
             }
 
-            var currentGameDayDate = teams[0].GameDays?.Last(gd => gd.ReportUrl != null)?.Datum;
+            var currentGameDayDate = teams[0].GameDays?.LastOrDefault(gd => gd.ReportUrl != null)?.Datum;
             if (currentGameDayDate == null)
             {
                 return [];
