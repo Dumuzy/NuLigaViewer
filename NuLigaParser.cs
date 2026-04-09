@@ -12,15 +12,39 @@ namespace NuLigaViewer
 
         private static readonly HtmlWeb web = new();
 
-        public static List<League> ParseLeagues()
+        public static List<BadenRegion> ParseLeagues()
         {
-            var badenUrl = "https://bsv-schach.liga.nu/cgi-bin/WebObjects/nuLigaSCHACHDE.woa/wa/leaguePage?championship=Baden+25%2F26";
-            var karlsruheUrl = "https://bsv-schach.liga.nu/cgi-bin/WebObjects/nuLigaSCHACHDE.woa/wa/leaguePage?championship=Karlsruhe+25%2F26";
+            var regions = new List<BadenRegion>();
+            var badenLeagues = new List<string>
+            {
+                "Baden",
+                "Mannheim",
+                "Heidelberg",
+                "Karlsruhe",
+                "Pforzheim",
+                "Mittelbaden",
+                "Ortenau",
+                "Odenwald",
+                "Freiburg",
+                "Hochrhein",
+                "Schwarzwald",
+                "Bodensee",
+            };
 
-            var leagues = ParseLeaguesFromUrl(web, badenUrl);
-            leagues.AddRange(ParseLeaguesFromUrl(web, karlsruheUrl));
+            foreach (var region in badenLeagues)
+            {
+                try
+                {
+                    var url = $"{urlRoot}cgi-bin/WebObjects/nuLigaSCHACHDE.woa/wa/leaguePage?championship={region}+25%2F26";
+                    regions.Add(new BadenRegion { Name = region, Leagues = ParseLeaguesFromUrl(web, url) });
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e.ToString());
+                }
+            }
 
-            return leagues;
+            return regions;
         }
 
         private static List<League> ParseLeaguesFromUrl(HtmlWeb web, string url)
@@ -97,7 +121,7 @@ namespace NuLigaViewer
                     continue;
                 }
                 var value = string.IsNullOrEmpty(cells[3 + i].InnerText) ? "0" : cells[3 + i].InnerText;
-                newTeam.BoardPointsPerRank[rankIndex] = double.Parse(value);
+                newTeam.BoardPointsPerRank[rankIndex] = double.TryParse(value, out var result) ? result : 0;
                 rankIndex++;
             }
 
@@ -143,6 +167,7 @@ namespace NuLigaViewer
                 var gameDay = new TeamPairing
                 {
                     Datum = DateTime.ParseExact(date, "d", new CultureInfo("de-DE")),
+                    RoundByCount = row,
                     Runde = int.Parse(round),
                     HeimMannschaft = homeTeam,
                     GastMannschaft = guestTeam,
@@ -292,6 +317,10 @@ namespace NuLigaViewer
 
             var clubLineUpsPage = web.Load(clubLineUpsUrl);
             var lineUps = clubLineUpsPage.DocumentNode.SelectNodes("//table[@class='result-set']")[0].SelectNodes("tr");
+            if (lineUps == null)
+            {
+                return [];
+            }
 
             var lineUpUrl = string.Empty;
             for (var lineUpIndex = 0; lineUpIndex < lineUps.Count; lineUpIndex++)

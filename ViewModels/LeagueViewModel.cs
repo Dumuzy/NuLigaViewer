@@ -60,7 +60,7 @@ namespace NuLigaViewer.ViewModels
 
             League = league;
 
-            if (_cachedLeagues.TryGetValue(league.Name, out var cachedTeams))
+            if (_cachedLeagues.TryGetValue(league.Url, out var cachedTeams))
             {
                 SortTeams(ref cachedTeams);
 
@@ -85,7 +85,7 @@ namespace NuLigaViewer.ViewModels
 
                 var teams = await Task.Run(() => NuLigaParser.ParseTeams(league) ?? []);
 
-                _cachedLeagues.TryAdd(league.Name, teams);
+                _cachedLeagues.TryAdd(league.Url, teams);
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -104,7 +104,7 @@ namespace NuLigaViewer.ViewModels
 
         private void RefreshTeams(Team[] teams)
         {
-            if (!_cachedLeagues.TryGetValue(League?.Name ?? string.Empty, out var cachedTeams) || cachedTeams != teams)
+            if (!_cachedLeagues.TryGetValue(League?.Url ?? string.Empty, out var cachedTeams) || cachedTeams != teams)
             {
                 return;
             }

@@ -79,7 +79,7 @@
             </CollectionView.ItemTemplate>
 
             <CollectionView.EmptyView>
-                <Label Text="No teams available" HorizontalOptions="Center" VerticalOptions="Center" />
+                <Label Text="Keine Mannschaften verfügbar" HorizontalOptions="Center" VerticalOptions="Center" />
             </CollectionView.EmptyView>
         </CollectionView>
     </Grid>

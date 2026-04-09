@@ -52,7 +52,7 @@ namespace NuLigaViewer.Data
                 {
                     continue;
                 }
-                player.PlayerInfoPerGameDay?[gameDay.Runde - 1] = new PlayerGameDayInfo
+                player.PlayerInfoPerGameDay?[gameDay.RoundByCount - 1] = new PlayerGameDayInfo
                 {
                     Pairing = pairings.First(),
                     SecondPairing = pairings.Count() > 1 ? pairings.Last() : null,

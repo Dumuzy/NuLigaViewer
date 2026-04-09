@@ -6,11 +6,11 @@ namespace NuLigaViewer.ViewModels
 {
     public class LeaguesViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<League> Leagues { get; }
+        public ObservableCollection<BadenRegion> Regions { get; }
 
-        public LeaguesViewModel(IEnumerable<League>? leagues)
+        public LeaguesViewModel(IEnumerable<BadenRegion> region)
         {
-            Leagues = new ObservableCollection<League>(leagues?.Where(l => l is not null).ToList() ?? Enumerable.Empty<League>());
+            Regions = new ObservableCollection<BadenRegion>(region);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

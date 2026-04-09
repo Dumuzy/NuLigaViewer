@@ -8,17 +8,7 @@ namespace NuLigaViewer
         {
             InitializeComponent();
 
-            List<Data.League>? leagues = null;
-
-            try
-            {
-                leagues = NuLigaParser.ParseLeagues();
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e.ToString());
-            }
-
+            var leagues = NuLigaParser.ParseLeagues();
             BindingContext = new ViewModels.LeaguesViewModel(leagues);
         }
 
