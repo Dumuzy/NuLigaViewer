@@ -67,7 +67,6 @@ namespace NuLigaViewer.ViewModels
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     RefreshTeams(cachedTeams);
-                    ColorTeams(Teams);
                 });
                 return;
             }
@@ -183,7 +182,6 @@ namespace NuLigaViewer.ViewModels
             var vms = Teams.Select(t => t).ToList();
 
             SortTeams(ref vms);
-            ColorTeams(vms);
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
@@ -234,25 +232,6 @@ namespace NuLigaViewer.ViewModels
                 }
                 return b.BW.CompareTo(a.BW);
             });
-        }
-
-        private static void ColorTeams(IList<TeamViewModel> teams)
-        {
-            for (var i = 0; i < teams.Count; i++)
-            {
-                if (i == 0)
-                {
-                    teams[i].RowColor = Colors.Green;
-                }
-                else if (i >= Math.Max(0, teams.Count - 2))
-                {
-                    teams[i].RowColor = Colors.Red;
-                }
-                else
-                {
-                    teams[i].RowColor = Application.Current?.RequestedTheme == AppTheme.Dark ? Colors.White : Colors.Black;
-                }
-            }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

@@ -102,6 +102,7 @@ namespace NuLigaViewer
 
             var newTeam = new Team
             {
+                Qualification = QualificationHelper.ParseQualification(cells[0]?.QuerySelector("img")?.Attributes["alt"]?.Value ?? string.Empty),
                 Rang = int.Parse(cells[1].InnerText),
                 Name = cells[2].InnerText,
                 TeamUrl = string.IsNullOrEmpty(teamUrl) ? null : urlRoot + teamUrl,

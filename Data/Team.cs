@@ -2,6 +2,7 @@ namespace NuLigaViewer.Data
 {
     public class Team
     {
+        public Qualification Qualification { get; set; }
         public int Rang { get; set; }
         public string Name { get; set; } = string.Empty;
         public double DWZ => (TeamPlayers != null && TeamPlayers.Count > 0) ? Math.Round(TeamPlayers.Average(x => x.DWZ)) : 0;

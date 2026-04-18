@@ -17,6 +17,7 @@ namespace NuLigaViewer.ViewModels
         }
 
         public string? Url => _team.TeamUrl;
+        public Qualification Qualification => _team.Qualification;
         public int Rank { get; set; }
         public string Name => _team.Name;
         public int Games => _team.Spiele;
@@ -29,17 +30,18 @@ namespace NuLigaViewer.ViewModels
         public ObservableCollection<PlayerRow> PlayerRows { get; } = new();
         public IReadOnlyList<string> RoundHeaders { get; private set; } = Array.Empty<string>();
 
-        private Color _rowColor = Application.Current?.RequestedTheme == AppTheme.Dark ? Colors.White : Colors.Black;
-        public Color RowColor
+        public Color RowColor => GetColorByQualification();
+
+        private Color GetColorByQualification()
         {
-            get => _rowColor;
-            set
+            switch (Qualification)
             {
-                if (_rowColor != value)
-                {
-                    _rowColor = value;
-                    OnPropertyChanged(nameof(RowColor));
-                }
+                case Qualification.Aufstieg:
+                    return Colors.Green;
+                case Qualification.Abstieg:
+                    return Colors.Red;
+                default:
+                    return Application.Current?.RequestedTheme == AppTheme.Dark ? Colors.White : Colors.Black;
             }
         }
 
