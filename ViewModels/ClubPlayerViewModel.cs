@@ -17,6 +17,7 @@ namespace NuLigaViewer.ViewModels
         public int? DWZ => _player.DWZ;
         public int? Number => _player.Number;
         public string? Status => _player.Status;
+        public string? Url => _player.Url;
 
         public void Refresh()
         {

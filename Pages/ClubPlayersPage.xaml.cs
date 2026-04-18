@@ -1,3 +1,5 @@
+using NuLigaViewer.ViewModels;
+
 namespace NuLigaViewer.Pages
 {
     public partial class ClubPlayersPage : ContentPage
@@ -16,6 +18,20 @@ namespace NuLigaViewer.Pages
 
         async void OnPlayerSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
+            var clubPlayer = e.CurrentSelection.FirstOrDefault() as ClubPlayerViewModel;
+            if (clubPlayer is null)
+            {
+                return;
+            }
+
+            if (sender is CollectionView cv)
+            {
+                cv.SelectedItem = null;
+            }
+
+            var playerName = Uri.EscapeDataString(clubPlayer.Name ?? string.Empty);
+            var url = Uri.EscapeDataString(clubPlayer.Url ?? string.Empty);
+            await Shell.Current.GoToAsync($"playerdetails?playerName={playerName}&url={url}");
         }
     }
 }

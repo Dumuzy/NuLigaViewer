@@ -63,7 +63,7 @@ namespace NuLigaViewer
             {
                 var league = new League
                 {
-                    Name = rows[row].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' '),
+                    Name = rows[row].InnerText.Trim('\n', '\t', ' '),
                     Url = urlRoot + rows[row].Attributes["href"].Value.TrimStart('/').Replace("amp;", ""),
                 };
                 leagues.Add(league);
@@ -157,11 +157,11 @@ namespace NuLigaViewer
             for (var row = 1; row < rows.Count; row++)
             {
                 var cells = rows[row].SelectNodes("th|td");
-                var date = cells[1].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' ');
-                var round = cells[4].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' ');
-                var homeTeam = cells[6].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' ');
-                var guestTeam = cells[7].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' ').Replace("&nbsp;", "");
-                var boardPoints = cells[8].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' ');
+                var date = cells[1].InnerText.Trim('\n', '\t', ' ');
+                var round = cells[4].InnerText.Trim('\n', '\t', ' ');
+                var homeTeam = cells[6].InnerText.Trim('\n', '\t', ' ');
+                var guestTeam = cells[7].InnerText.Trim('\n', '\t', ' ').Replace("&nbsp;", "");
+                var boardPoints = cells[8].InnerText.Trim('\n', '\t', ' ');
                 var reportUrl = cells[8].QuerySelector("a")?.Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
 
                 var gameDay = new TeamPairing
@@ -221,17 +221,17 @@ namespace NuLigaViewer
                 {
                     continue;
                 }
-                var homePlayerDWZ = cells[2].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' ');
-                var guestPlayerDWZ = cells[4].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' ');
+                var homePlayerDWZ = cells[2].InnerText.Trim('\n', '\t', ' ');
+                var guestPlayerDWZ = cells[4].InnerText.Trim('\n', '\t', ' ');
 
                 var pairing = new Pairing
                 {
-                    Brett = int.Parse(cells[0].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' ')),
-                    HeimSpieler = cells[1].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' '),
+                    Brett = int.Parse(cells[0].InnerText.Trim('\n', '\t', ' ')),
+                    HeimSpieler = cells[1].InnerText.Trim('\n', '\t', ' '),
                     HeimSpielerDWZ = int.Parse(string.IsNullOrEmpty(homePlayerDWZ) ? "1000" : homePlayerDWZ),
-                    GastSpieler = cells[3].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' '),
+                    GastSpieler = cells[3].InnerText.Trim('\n', '\t', ' '),
                     GastSpielerDWZ = int.Parse(string.IsNullOrEmpty(guestPlayerDWZ) ? "1000" : guestPlayerDWZ),
-                    Ergebnis = cells[5].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' '),
+                    Ergebnis = cells[5].InnerText.Trim('\n', '\t', ' '),
                     RelatedTeamPairing = teamPairing
                 };
                 pairings.Add(pairing);
@@ -264,10 +264,10 @@ namespace NuLigaViewer
                 var player = new Player
                 {
                     Brett = int.Parse(cells[0].InnerText),
-                    Name = cells[1].InnerText.Trim().TrimStart('\n').TrimEnd('\n').Trim(),
+                    Name = cells[1].InnerText.Trim('\n', '\t', ' '),
                     DWZ = int.Parse(string.IsNullOrEmpty(cells[3].InnerText) ? "1000" : cells[3].InnerText),
                     Games = int.Parse(cells[4].InnerText),
-                    BoardPoints = cells[5].InnerText.TrimStart('\n', '\t', ' ').TrimEnd('\n', '\t', ' '),
+                    BoardPoints = cells[5].InnerText.Trim('\n', '\t', ' '),
                     TeamName = teamName,
                     PlayerInfoPerGameDay = new PlayerGameDayInfo[numberOfGameDays]
                 };
@@ -351,18 +351,116 @@ namespace NuLigaViewer
 
                 var dwz = int.TryParse(cells[1].InnerText, out var parsedDWZ) ? parsedDWZ : (int?)null;
                 var number = int.TryParse(cells[3].InnerText, out var parsedNumber) ? parsedNumber : (int?)null;
+                var playerUrl = cells[2].QuerySelector("a")?.Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
 
                 var player = new ClubPlayer
                 {
                     Rang = int.Parse(cells[0].InnerText),
                     DWZ = dwz,
-                    Name = cells[2].InnerText.Trim().TrimStart('\n').TrimEnd('\n').Trim(),
+                    Name = cells[2].InnerText.Trim('\n', '\t', ' '),
                     Number = number,
-                    Status = cells[5].InnerText.Trim().TrimStart('\n').TrimEnd('\n').Trim()
+                    Status = cells[5].InnerText.Trim('\n', '\t', ' '),
+                    Url = string.IsNullOrEmpty(playerUrl) ? null : urlRoot + playerUrl
                 };
                 clubPlayers.Add(player);
             }
             return clubPlayers;
+        }
+
+        public static Player? ParseClubPlayerDetails(string playerUrl, string name)
+        {
+            var playerDoc = web.Load(playerUrl);
+            var tables = playerDoc.DocumentNode.SelectNodes("//table[@class='result-set']");
+            if (tables == null || tables.Count < 1)
+            {
+                return null;
+            }
+
+            var playerInfoTable = tables[0];
+            var dwzString = playerInfoTable.SelectNodes("tr")[4].SelectNodes("th|td")[1].InnerText.Trim('\n', '\t', ' ');
+
+            var playerDetails = new Player
+            {
+                Name = name,
+                DWZ = int.TryParse(dwzString, out var parsedDWZ) ? parsedDWZ : 1000,
+            };
+
+            if (tables.Count > 1)
+            {
+                var pairingTable = tables[1];
+                var pairings = new List<Pairing>();
+                var secondPairings = new List<Pairing>();
+
+                var rows = pairingTable.SelectNodes("tr");
+                for (var row = 0; row < rows.Count; row++)
+                {
+                    var cells = rows[row].SelectNodes("th|td");
+                    if (cells.Count < 7 || cells[0].InnerText == "Datum")
+                    {
+                        continue;
+                    }
+                    var guestPlayerDWZ = cells[3].InnerText.Trim('\n', '\t', ' ');
+
+                    var dummyTp = new TeamPairing
+                    {
+                        HeimMannschaft = "Dummy",
+                        GastMannschaft = cells[5].InnerText.Trim('\n', '\t', ' '),
+                        Datum = DateTime.TryParseExact(cells[0].InnerText.Trim('\n', '\t', ' '), "d", new CultureInfo("de-DE"), DateTimeStyles.None, out var dateTime) ? dateTime : DateTime.Today,
+                    };
+
+                    var opponentUrl = cells[2].QuerySelector("a")?.Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
+                    var opponentName = cells[2].InnerText.Split('(')[0].Trim('\n', '\t', ' ');
+
+                    var pairing = new Pairing
+                    {
+                        Brett = int.Parse(cells[1].InnerText.Trim('\n', '\t', ' ')),
+                        HeimSpieler = name,
+                        HeimSpielerDWZ = playerDetails.DWZ,
+                        GastSpieler = opponentName,
+                        GastSpielerDWZ = int.TryParse(guestPlayerDWZ, out var parsedGuestDWZ) ? parsedGuestDWZ : 1000,
+                        OpponentUrl = string.IsNullOrEmpty(opponentUrl) ? null : urlRoot + opponentUrl,
+                        Ergebnis = cells[4].InnerText.Trim('\n', '\t', ' '),
+                        RelatedTeamPairing = dummyTp
+                    };
+
+                    // If date is empty, it is a second pairing for the same gameday.
+                    if (string.IsNullOrEmpty(cells[0].InnerText.Replace("&nbsp;", "")))
+                    {
+                        if (row > 0)
+                        {
+                            var lastPairing = pairings.Last();
+                            pairing.RelatedTeamPairing.GastMannschaft = lastPairing.RelatedTeamPairing?.GastMannschaft;
+                            pairing.RelatedTeamPairing.Datum = lastPairing.RelatedTeamPairing!.Datum;
+                            secondPairings.Add(pairing);
+                        }
+                    }
+                    else
+                    {
+                        pairings.Add(pairing);
+                    }
+                }
+
+                playerDetails.PlayerInfoPerGameDay = new PlayerGameDayInfo[pairings.Count];
+
+                var index = 0;
+                foreach (var pairing in pairings)
+                {
+                    playerDetails.PlayerInfoPerGameDay[index] = new PlayerGameDayInfo
+                    {
+                        Pairing = pairing,
+                        PlayerIsInHomeTeam = true,
+                    };
+
+                    var secondPairing = secondPairings.FirstOrDefault(x => x.RelatedTeamPairing!.Datum == pairing.RelatedTeamPairing!.Datum);
+                    if (secondPairing != null)
+                    {
+                        playerDetails.PlayerInfoPerGameDay[index]!.SecondPairing = secondPairing;
+                    }
+                    index++;
+                }
+            }
+
+            return playerDetails;
         }
     }
 }

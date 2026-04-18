@@ -7,5 +7,6 @@ namespace NuLigaViewer.Data
         public string? Name { get; set; }
         public int? Number { get; set; }
         public string? Status { get; set; }
+        public string? Url { get; set; }
     }
 }

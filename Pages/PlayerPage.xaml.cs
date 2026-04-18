@@ -15,6 +15,21 @@ namespace NuLigaViewer.Pages
             if (query.TryGetValue("playerName", out var nameObj) && nameObj is string playerName)
             {
                 var player = NavigationState.SelectedLeagueViewModel.AllAvailablePlayer.FirstOrDefault(player => player.Name == playerName);
+                if (query.TryGetValue("url", out var urlObj) && urlObj is string url && !string.IsNullOrEmpty(url))
+                {
+                    try
+                    {
+                        var playerDetails = NuLigaParser.ParseClubPlayerDetails(url, playerName);
+                        if (playerDetails != null)
+                        {
+                            player = playerDetails;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e.ToString());
+                    }
+                }
 
                 BindingContext = player != null ? new PlayerRow
                 {
@@ -41,7 +56,13 @@ namespace NuLigaViewer.Pages
             }
 
             var playerName = Uri.EscapeDataString(playerInfo.Opponent ?? string.Empty);
-            await Shell.Current.GoToAsync($"playerdetails?playerName={playerName}");
+            var route = $"playerdetails?playerName={playerName}";
+            if (playerInfo.Pairing.OpponentUrl != null)
+            {
+                route += $"&url={Uri.EscapeDataString(playerInfo.Pairing.OpponentUrl)}";
+            }
+
+            await Shell.Current.GoToAsync(route);
         }
     }
 }

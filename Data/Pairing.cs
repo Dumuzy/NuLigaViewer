@@ -12,5 +12,6 @@ namespace NuLigaViewer.Data
         public string? Ergebnis { get; set; }
         public BoardPoints BoardPoints => Ergebnis?.AsBoardPoints() ?? BoardPoints.NotPlayed;
         public TeamPairing? RelatedTeamPairing { get; set; }
+        public string? OpponentUrl { get; set; }
     }
 }
