@@ -3,10 +3,11 @@ namespace NuLigaViewer.Data
     public class GameReport
     {
         public List<Pairing> Pairings { get; set; } = [];
-        public IEnumerable<Pairing> RegularPairings => Pairings.Where(x => x.BoardPoints.IsRegularResult());
+        public IEnumerable<Pairing> HomePairingsForAverage => Pairings.Where(x => x.BoardPoints != BoardPoints.NotPlayed && x.HeimSpieler?.Contains("nicht anwesend") == false);
+        public IEnumerable<Pairing> GuestPairingsForAverage => Pairings.Where(x => x.BoardPoints != BoardPoints.NotPlayed && x.GastSpieler?.Contains("nicht anwesend") == false);
 
-        public double AverageHomeDWZ => RegularPairings.Any() ? Math.Round(RegularPairings.Average(x => x.HeimSpielerDWZ)) : 0;
-        public double AverageGuestDWZ => RegularPairings.Any() ? Math.Round(RegularPairings.Average(x => x.GastSpielerDWZ)) : 0;
+        public double AverageHomeDWZ => HomePairingsForAverage.Any() ? Math.Round(HomePairingsForAverage.Average(x => x.HeimSpielerDWZ)) : 0;
+        public double AverageGuestDWZ => GuestPairingsForAverage.Any() ? Math.Round(GuestPairingsForAverage.Average(x => x.GastSpielerDWZ)) : 0;
 
         public IEnumerable<Pairing> GetPairingForPlayer(string? playerName, bool forHomeTeam)
         {
