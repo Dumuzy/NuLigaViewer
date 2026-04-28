@@ -82,7 +82,7 @@ namespace NuLigaViewer.ViewModels
             {
                 IsLoading = true;
 
-                var teams = await Task.Run(() => NuLigaParser.ParseTeams(league) ?? []);
+                var teams = await Task.Run(async () => await NuLigaParser.ParseTeams(league) ?? []);
 
                 _cachedLeagues.TryAdd(league.Url, teams);
 

@@ -27,6 +27,7 @@ namespace NuLigaViewer.Pages
                 cv.SelectedItem = null;
             }
 
+            teamVm.Refresh();
             _ = NavigationState.SelectedTeamOverview.LoadClubPlayersAsync(teamVm);
             await Shell.Current.GoToAsync($"//team/gamedays");
         }

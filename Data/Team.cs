@@ -13,9 +13,10 @@ namespace NuLigaViewer.Data
         public double BP { get; set; }
 
         public string? TeamUrl { get; set; }
+        public string? ClubLineUpsUrl { get; set; }
 
         public List<Player>? TeamPlayers { get; set; }
-
+        public HashSet<DewisClubPlayer>? ClubPlayers { get; set; }
         public List<TeamPairing>? GameDays { get; set; }
         public bool AllReportsLoaded => GameDays != null && GameDays.Where(t => !string.IsNullOrEmpty(t.ReportUrl))
             .All(t => t.Report != null);

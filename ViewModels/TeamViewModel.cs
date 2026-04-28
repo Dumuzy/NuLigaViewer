@@ -16,7 +16,7 @@ namespace NuLigaViewer.ViewModels
             BuildPlayerRows();
         }
 
-        public string? Url => _team.TeamUrl;
+        public string? ClubLineUpsUrl => _team.ClubLineUpsUrl;
         public Qualification Qualification => _team.Qualification;
         public int Rank { get; set; }
         public string Name => _team.Name;

@@ -9,4 +9,13 @@ namespace NuLigaViewer.Data
         public string? Status { get; set; }
         public string? Url { get; set; }
     }
+
+    public class DewisClubPlayer
+    {
+        public int? Id { get; set; }
+        public required string Nachname { get; set; }
+        public required string Vorname { get; set; }
+        public required string Titel { get; set; }
+        public int? DWZ { get; set; }
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using NuLigaViewer.Data;
+using System.Collections.Concurrent;
 using System.Globalization;
 
 namespace NuLigaViewer
@@ -7,10 +8,12 @@ namespace NuLigaViewer
     public static class NuLigaParser
     {
         private static readonly string urlRoot = "https://bsv-schach.liga.nu/";
+        private static readonly HtmlWeb web = new();
+        private static readonly ConcurrentDictionary<string, HtmlNodeCollection?> _cachedTeamPages = new();
+        private static readonly ConcurrentDictionary<string, Tuple<string?, HashSet<DewisClubPlayer>?>> _cachedClubs = new();
+        private static readonly ConcurrentDictionary<string, Dictionary<string, int>> TeamToClubPlayerToDwzMapping = new();
 
         public static event Action<League, TeamPairing>? TeamPairingReportLoadedForGui;
-
-        private static readonly HtmlWeb web = new();
 
         public static List<BadenRegion> ParseLeagues()
         {
@@ -72,7 +75,7 @@ namespace NuLigaViewer
             return leagues;
         }
 
-        public static Team[] ParseTeams(League league)
+        public static async Task<Team[]> ParseTeams(League league)
         {
             var doc = web.Load(league.Url);
             var crossTableList = doc.DocumentNode.SelectNodes("//table[@class='cross-table']");
@@ -83,6 +86,44 @@ namespace NuLigaViewer
 
             var rankingTable = crossTableList[0];
             var rows = rankingTable.SelectNodes("tr");
+
+            // start with 1, skip headers in 0
+            await Parallel.ForAsync(1, rows.Count, async (row, ct) =>
+            {
+                var cells = rows[row].SelectNodes("th|td");
+                var teamName = cells[2].InnerText;
+                var teamUrl = cells[2].QuerySelector("a").Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
+                if (string.IsNullOrEmpty(teamUrl))
+                {
+                    return;
+                }
+                teamUrl = urlRoot + teamUrl;
+
+                if (!_cachedTeamPages.TryGetValue(teamUrl, out var resultSetList))
+                {
+                    resultSetList = TryLoadWebResourceThreeTimes(web, teamUrl, "//table[@class='result-set']");
+                    _cachedTeamPages.TryAdd(teamUrl, resultSetList);
+                }
+                if (resultSetList != null && resultSetList.Count >= 1)
+                {
+                    var clubUrl = urlRoot + resultSetList[0].SelectNodes("tr")[0].SelectNodes("th|td")[1].QuerySelector("a").Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
+                    (_, var dewisClubPlayers) = await LoadClubResources(clubUrl);
+                    if (dewisClubPlayers != null && !TeamToClubPlayerToDwzMapping.ContainsKey(teamName))
+                    {
+                        Dictionary<string, int> playerToDwzMapping = new();
+                        foreach (var player in dewisClubPlayers)
+                        {
+                            var playerKey = $"{player.Nachname}, {player.Vorname}";
+                            if (player.DWZ != null)
+                            {
+                                playerToDwzMapping[playerKey] = player.DWZ.Value;
+                            }
+                        }
+                        TeamToClubPlayerToDwzMapping.TryAdd(teamName, playerToDwzMapping);
+                    }
+                }
+            });
+
             var numberOfTeams = rows.Count - 1; // BW Liga has 12 teams, others 10, KKC has 8 (+ header)
             var teams = new Team[numberOfTeams];
 
@@ -98,7 +139,7 @@ namespace NuLigaViewer
 
         private static Team ParseTeam(HtmlNodeCollection cells, int row, int numberOfTeams, League league)
         {
-            var teamUrl = cells[2].QuerySelector("a").Attributes["href"].Value;
+            var teamUrl = cells[2].QuerySelector("a").Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
 
             var newTeam = new Team
             {
@@ -129,17 +170,67 @@ namespace NuLigaViewer
             return newTeam;
         }
 
-        private static void ParseGameDaysAndPlayers(Team newTeam, int numberOfTeams, League league)
+        private static async void ParseGameDaysAndPlayers(Team newTeam, int numberOfTeams, League league)
         {
             if (newTeam.TeamUrl == null)
             {
                 return;
             }
 
-            var resultSetList = TryLoadWebResourceThreeTimes(web, newTeam.TeamUrl, "//table[@class='result-set']");
+            if (!_cachedTeamPages.TryGetValue(newTeam.TeamUrl, out var resultSetList))
+            {
+                // should not be reached:
+                resultSetList = TryLoadWebResourceThreeTimes(web, newTeam.TeamUrl, "//table[@class='result-set']");
+                _cachedTeamPages.TryAdd(newTeam.TeamUrl, resultSetList);
+            }
+            if (resultSetList != null && resultSetList.Count >= 1)
+            {
+                var clubUrl = urlRoot + resultSetList[0].SelectNodes("tr")[0].SelectNodes("th|td")[1].QuerySelector("a").Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
+
+                (string? clubLineUpsUrl, var dewisClubPlayers) = await LoadClubResources(clubUrl);
+                newTeam.ClubLineUpsUrl = clubLineUpsUrl;
+                newTeam.ClubPlayers = dewisClubPlayers;
+            }
 
             newTeam.GameDays = ParseGameDays(resultSetList, newTeam.GameDayReportLoaded, league);
-            newTeam.TeamPlayers = ParsePlayers(resultSetList, newTeam.Name, newTeam.GameDays?.Count ?? numberOfTeams - 1);
+            newTeam.TeamPlayers = ParsePlayers(resultSetList, newTeam, newTeam.GameDays?.Count ?? numberOfTeams - 1);
+        }
+
+        private async static Task<Tuple<string?, HashSet<DewisClubPlayer>?>> LoadClubResources(string clubUrl)
+        {
+            if (_cachedClubs.TryGetValue(clubUrl, out var cachedClubs))
+            {
+                return cachedClubs;
+            }
+
+            try
+            {
+                var clubTables = TryLoadWebResourceThreeTimes(web, clubUrl, "//table");
+                if (clubTables == null || clubTables.Count < 1)
+                {
+                    return new Tuple<string?, HashSet<DewisClubPlayer>?>(null, null);
+                }
+
+                var clubPageLinks = clubTables[0].SelectNodes("tr")[0].SelectNodes("th|td")[0].SelectNodes("ul")[0].SelectNodes("li");
+                var clubLineUpsUrl = urlRoot + clubPageLinks[2].QuerySelector("a").Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
+
+                var pLine = clubTables[0].SelectNodes("tr")[0].SelectNodes("th|td")[0].SelectNodes("p")[0].InnerText;
+                var pLineTrimmed = pLine.Replace("&nbsp;", "").Trim().Trim('\r', '\n').Trim();
+                var vnrNumber = pLineTrimmed.Split(',')[0];
+                var zpsNumber = vnrNumber.Substring(vnrNumber.IndexOf(':') + 1) ?? "";
+
+                var clubPlayers = await DewisAccess.GetClubPlayers(zpsNumber);
+                var clubResource = new Tuple<string?, HashSet<DewisClubPlayer>?>(clubLineUpsUrl, clubPlayers);
+                _cachedClubs.TryAdd(clubUrl, clubResource);
+
+                return clubResource;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load Dewis club players for club {clubUrl}: {ex.Message}");
+            }
+
+            return new Tuple<string?, HashSet<DewisClubPlayer>?>(null, null);
         }
 
         private static List<TeamPairing>? ParseGameDays(HtmlNodeCollection? resultSetList, Action<TeamPairing> gameDayReportLoaded, League league)
@@ -213,6 +304,8 @@ namespace NuLigaViewer
 
             var pairings = new List<Pairing>();
             var gameReportTable = resultSetList[0];
+            var homeClubPlayerToDwzMapping = TeamToClubPlayerToDwzMapping.GetValueOrDefault(teamPairing.HeimMannschaft ?? "");
+            var guestClubPlayerToDwzMapping = TeamToClubPlayerToDwzMapping.GetValueOrDefault(teamPairing.GastMannschaft ?? "");
 
             var rows = gameReportTable.SelectNodes("tr");
             for (var row = 1; row < rows.Count; row++)
@@ -222,26 +315,38 @@ namespace NuLigaViewer
                 {
                     continue;
                 }
+                var homePlayerName = cells[1].InnerText.Trim('\n', '\t', ' ');
+                var guestPlayerName = cells[3].InnerText.Trim('\n', '\t', ' ');
                 var homePlayerDWZ = cells[2].InnerText.Trim('\n', '\t', ' ');
                 var guestPlayerDWZ = cells[4].InnerText.Trim('\n', '\t', ' ');
 
                 var pairing = new Pairing
                 {
                     Brett = int.Parse(cells[0].InnerText.Trim('\n', '\t', ' ')),
-                    HeimSpieler = cells[1].InnerText.Trim('\n', '\t', ' '),
+                    HeimSpieler = homePlayerName,
                     HeimSpielerDWZ = int.Parse(string.IsNullOrEmpty(homePlayerDWZ) ? "1000" : homePlayerDWZ),
-                    GastSpieler = cells[3].InnerText.Trim('\n', '\t', ' '),
+                    GastSpieler = guestPlayerName,
                     GastSpielerDWZ = int.Parse(string.IsNullOrEmpty(guestPlayerDWZ) ? "1000" : guestPlayerDWZ),
                     Ergebnis = cells[5].InnerText.Trim('\n', '\t', ' '),
                     RelatedTeamPairing = teamPairing
                 };
+
+                if (homeClubPlayerToDwzMapping?.TryGetValue(homePlayerName, out var dewisDwzForHomePlayer) == true)
+                {
+                    pairing.HeimSpielerDWZ = dewisDwzForHomePlayer;
+                }
+                if (guestClubPlayerToDwzMapping?.TryGetValue(guestPlayerName, out var dewisDwzForGuestPlayer) == true)
+                {
+                    pairing.GastSpielerDWZ = dewisDwzForGuestPlayer;
+                }
+
                 pairings.Add(pairing);
             }
 
             return new GameReport { Pairings = pairings };
         }
 
-        private static List<Player>? ParsePlayers(HtmlNodeCollection? resultSetList, string teamName, int numberOfGameDays)
+        private static List<Player>? ParsePlayers(HtmlNodeCollection? resultSetList, Team newTeam, int numberOfGameDays)
         {
             if (resultSetList == null || resultSetList.Count < 3)
             {
@@ -269,9 +374,15 @@ namespace NuLigaViewer
                     DWZ = int.Parse(string.IsNullOrEmpty(cells[3].InnerText) ? "1000" : cells[3].InnerText),
                     Games = int.Parse(cells[4].InnerText),
                     BoardPoints = cells[5].InnerText.Trim('\n', '\t', ' '),
-                    TeamName = teamName,
+                    TeamName = newTeam.Name,
                     PlayerInfoPerGameDay = new PlayerGameDayInfo[numberOfGameDays]
                 };
+
+                var dewisPlayer = newTeam.ClubPlayers?.FirstOrDefault(dp => $"{dp.Nachname}, {dp.Vorname}" == player.Name);
+                if (dewisPlayer?.DWZ != null)
+                {
+                    player.DWZ = dewisPlayer.DWZ ?? 1000;
+                }
                 players.Add(player);
             }
 
@@ -301,20 +412,12 @@ namespace NuLigaViewer
             return null;
         }
 
-        public static List<ClubPlayer> ParseAllClubPlayers(string? teamUrl)
+        public static List<ClubPlayer> ParseAllClubPlayers(string? clubLineUpsUrl)
         {
-            if (string.IsNullOrEmpty(teamUrl))
+            if (string.IsNullOrEmpty(clubLineUpsUrl))
             {
                 return [];
             }
-
-            var teamDoc = web.Load(teamUrl);
-            var teamInfoTable = teamDoc.DocumentNode.SelectNodes("//table[@class='result-set']")[0];
-            var teamMainPageUrl = urlRoot + teamInfoTable.SelectNodes("tr")[0].SelectNodes("th|td")[1].QuerySelector("a").Attributes["href"].Value;
-
-            var clubPage = web.Load(teamMainPageUrl);
-            var clubPageLinks = clubPage.DocumentNode.SelectNodes("//table")[0].SelectNodes("tr")[0].SelectNodes("th|td")[0].SelectNodes("ul")[0].SelectNodes("li");
-            var clubLineUpsUrl = urlRoot + clubPageLinks[2].QuerySelector("a").Attributes["href"].Value;
 
             var clubLineUpsPage = web.Load(clubLineUpsUrl);
             var lineUps = clubLineUpsPage.DocumentNode.SelectNodes("//table[@class='result-set']")[0].SelectNodes("tr");
