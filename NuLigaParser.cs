@@ -413,7 +413,7 @@ namespace NuLigaViewer
             return null;
         }
 
-        public static List<ClubPlayer> ParseAllClubPlayers(string? clubLineUpsUrl)
+        public static List<ClubPlayer> ParseAllClubPlayers(string? clubLineUpsUrl, string teamName)
         {
             if (string.IsNullOrEmpty(clubLineUpsUrl))
             {
@@ -425,10 +425,10 @@ namespace NuLigaViewer
                 return cachedClubsPlayers;
             }
 
-            return LoadClubLineUpResource(clubLineUpsUrl);
+            return LoadClubLineUpResource(clubLineUpsUrl, teamName);
         }
 
-        private static List<ClubPlayer> LoadClubLineUpResource(string clubLineUpsUrl)
+        private static List<ClubPlayer> LoadClubLineUpResource(string clubLineUpsUrl, string teamName)
         {
             try
             {
@@ -469,16 +469,21 @@ namespace NuLigaViewer
                     var dwz = int.TryParse(cells[1].InnerText, out var parsedDWZ) ? parsedDWZ : (int?)null;
                     var number = int.TryParse(cells[3].InnerText, out var parsedNumber) ? parsedNumber : (int?)null;
                     var playerUrl = cells[2].QuerySelector("a")?.Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
+                    var clubPlayerName = cells[2].InnerText.Trim('\n', '\t', ' ');
 
                     var player = new ClubPlayer
                     {
                         Rang = int.Parse(cells[0].InnerText),
                         DWZ = dwz,
-                        Name = cells[2].InnerText.Trim('\n', '\t', ' '),
+                        Name = clubPlayerName,
                         Number = number,
                         Status = cells[5].InnerText.Trim('\n', '\t', ' '),
                         Url = string.IsNullOrEmpty(playerUrl) ? null : urlRoot + playerUrl
                     };
+                    if (TeamToClubPlayerToDwzMapping.GetValueOrDefault(teamName)?.TryGetValue(clubPlayerName, out var dewisDWZ) == true)
+                    {
+                        player.DWZ = dewisDWZ;
+                    }
                     clubPlayers.Add(player);
                 }
 
@@ -493,7 +498,7 @@ namespace NuLigaViewer
             return [];
         }
 
-        public static Player? ParseClubPlayerDetails(string playerUrl, string name)
+        public static Player? ParseClubPlayerDetails(string playerUrl, string name, string? teamName)
         {
             var playerDoc = web.Load(playerUrl);
             var tables = playerDoc.DocumentNode.SelectNodes("//table[@class='result-set']");
@@ -511,6 +516,11 @@ namespace NuLigaViewer
                 DWZ = int.TryParse(dwzString, out var parsedDWZ) ? parsedDWZ : 1000,
             };
 
+            if (TeamToClubPlayerToDwzMapping.GetValueOrDefault(teamName ?? "")?.TryGetValue(name, out var dewisDWZ) == true)
+            {
+                playerDetails.DWZ = dewisDWZ;
+            }
+
             if (tables.Count > 1)
             {
                 var pairingTable = tables[1];
@@ -525,17 +535,18 @@ namespace NuLigaViewer
                     {
                         continue;
                     }
+
                     var guestPlayerDWZ = cells[3].InnerText.Trim('\n', '\t', ' ');
+                    var opponentTeamName = cells[5].InnerText.Trim('\n', '\t', ' ');
+                    var opponentUrl = cells[2].QuerySelector("a")?.Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
+                    var opponentName = cells[2].InnerText.Split('(')[0].Trim('\n', '\t', ' ');
 
                     var dummyTp = new TeamPairing
                     {
                         HeimMannschaft = "Dummy",
-                        GastMannschaft = cells[5].InnerText.Trim('\n', '\t', ' '),
+                        GastMannschaft = opponentTeamName,
                         Datum = DateTime.TryParseExact(cells[0].InnerText.Trim('\n', '\t', ' '), "d", new CultureInfo("de-DE"), DateTimeStyles.None, out var dateTime) ? dateTime : DateTime.Today,
                     };
-
-                    var opponentUrl = cells[2].QuerySelector("a")?.Attributes["href"].Value.TrimStart('/').Replace("amp;", "");
-                    var opponentName = cells[2].InnerText.Split('(')[0].Trim('\n', '\t', ' ');
 
                     var pairing = new Pairing
                     {
@@ -548,6 +559,11 @@ namespace NuLigaViewer
                         Ergebnis = cells[4].InnerText.Trim('\n', '\t', ' '),
                         RelatedTeamPairing = dummyTp
                     };
+
+                    if (TeamToClubPlayerToDwzMapping.GetValueOrDefault(opponentTeamName)?.TryGetValue(name, out var opponentDewisDWZ) == true)
+                    {
+                        pairing.GastSpielerDWZ = opponentDewisDWZ;
+                    }
 
                     // If date is empty, it is a second pairing for the same gameday.
                     if (string.IsNullOrEmpty(cells[0].InnerText.Replace("&nbsp;", "")))

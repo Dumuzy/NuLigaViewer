@@ -48,7 +48,7 @@ namespace NuLigaViewer.ViewModels
 
             try
             {
-                var clubPlayers = await Task.Run(() => NuLigaParser.ParseAllClubPlayers(teamVm.ClubLineUpsUrl) ?? []);
+                var clubPlayers = await Task.Run(() => NuLigaParser.ParseAllClubPlayers(teamVm.ClubLineUpsUrl, teamVm.Name) ?? []);
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {

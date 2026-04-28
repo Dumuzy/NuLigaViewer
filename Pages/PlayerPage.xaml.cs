@@ -19,7 +19,7 @@ namespace NuLigaViewer.Pages
                 {
                     try
                     {
-                        var playerDetails = NuLigaParser.ParseClubPlayerDetails(url, playerName);
+                        var playerDetails = NuLigaParser.ParseClubPlayerDetails(url, playerName, NavigationState.SelectedTeamOverview.Name);
                         if (playerDetails != null)
                         {
                             player = playerDetails;
