@@ -1,4 +1,4 @@
-using NuLigaViewer.Data;
+using NuLigaViewer.ViewModels;
 
 namespace NuLigaViewer.Pages
 {
@@ -18,7 +18,7 @@ namespace NuLigaViewer.Pages
 
         public async void OnSelectedTeamPairingChanged(object? sender, SelectionChangedEventArgs e)
         {
-            var selectedTeamPairing = e.CurrentSelection.FirstOrDefault() as TeamPairing;
+            var selectedTeamPairing = e.CurrentSelection.FirstOrDefault() as GameDayViewModel;
             if (selectedTeamPairing is null)
             {
                 return;

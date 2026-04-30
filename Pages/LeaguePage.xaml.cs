@@ -28,6 +28,8 @@ namespace NuLigaViewer.Pages
             }
 
             teamVm.Refresh();
+            NavigationState.SelectedTeamOverview.SelectedTeam = teamVm;
+            NavigationState.SelectedTeamOverview.LoadGameDays(teamVm);
             _ = NavigationState.SelectedTeamOverview.LoadClubPlayersAsync(teamVm);
             await Shell.Current.GoToAsync($"//team/gamedays");
         }

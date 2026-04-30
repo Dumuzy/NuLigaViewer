@@ -19,13 +19,6 @@ namespace NuLigaViewer.ViewModels
         public string? Status => _player.Status;
         public string? Url => _player.Url;
 
-        public void Refresh()
-        {
-            OnPropertyChanged(nameof(Rang));
-            OnPropertyChanged(nameof(Name));
-            OnPropertyChanged(nameof(DWZ));
-        }
-
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

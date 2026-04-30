@@ -48,8 +48,8 @@ namespace NuLigaViewer.ViewModels
         public IEnumerable<Player> Players => _team.TeamPlayers ?? Enumerable.Empty<Player>();
         public IList<TeamPairing>? GameDays => _team.GameDays;
 
-        public bool ContainsTeamPairing(TeamPairing gameDay) =>
-            _team.GameDays != null && _team.GameDays.Contains(gameDay);
+        public bool ContainsTeamPairing(TeamPairing teamPairing) =>
+            _team.GameDays != null && _team.GameDays.Contains(teamPairing);
 
         private void BuildPlayerRows()
         {

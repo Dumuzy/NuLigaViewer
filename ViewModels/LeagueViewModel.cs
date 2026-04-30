@@ -163,6 +163,11 @@ namespace NuLigaViewer.ViewModels
                     teamViewModel.Refresh();
                 }
 
+                if (teamViewModel == NavigationState.SelectedTeamOverview.SelectedTeam)
+                {
+                    NavigationState.SelectedTeamOverview.Refresh();
+                }
+
                 var tpViewModel = LastGameDay.FirstOrDefault(t => t.ContainsTeamPairing(teamPairing));
                 if (tpViewModel != null)
                 {

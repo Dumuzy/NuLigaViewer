@@ -6,10 +6,6 @@ namespace NuLigaViewer.ViewModels
 {
     public class TeamOverviewViewModel : INotifyPropertyChanged
     {
-        public class TeamOverViewVieModel()
-        {
-        }
-
         private TeamViewModel? _selectedTeam;
         public TeamViewModel? SelectedTeam
         {
@@ -32,20 +28,21 @@ namespace NuLigaViewer.ViewModels
 
         public IReadOnlyList<string>? RoundHeaders => SelectedTeam?.RoundHeaders;
         public ObservableCollection<PlayerRow>? PlayerRows => SelectedTeam?.PlayerRows;
-        public IList<TeamPairing>? GameDays => SelectedTeam?.GameDays;
 
-
+        public ObservableCollection<GameDayViewModel> GameDays { get; } = new();
         public ObservableCollection<ClubPlayerViewModel> ClubPlayers { get; } = new();
+
+        public void LoadGameDays(TeamViewModel teamVm)
+        {
+            GameDays.Clear();
+            foreach (var gameDay in teamVm.GameDays ?? [])
+            {
+                GameDays.Add(new GameDayViewModel(gameDay));
+            }
+        }
 
         public async Task LoadClubPlayersAsync(TeamViewModel teamVm)
         {
-            if (teamVm == null)
-            {
-                return;
-            }
-
-            SelectedTeam = teamVm;
-
             try
             {
                 var clubPlayers = await Task.Run(() => NuLigaParser.ParseAllClubPlayers(teamVm.ClubLineUpsUrl, teamVm.Name) ?? []);
@@ -62,6 +59,19 @@ namespace NuLigaViewer.ViewModels
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.ToString());
+            }
+        }
+
+        public void Refresh()
+        {
+            if (SelectedTeam == null)
+            {
+                return;
+            }
+
+            foreach (var gameDay in GameDays)
+            {
+                gameDay.Refresh();
             }
         }
 
