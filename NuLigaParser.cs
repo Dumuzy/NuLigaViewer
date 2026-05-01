@@ -465,6 +465,10 @@ namespace NuLigaViewer
                 for (var row = 1; row < playerRows.Count; row++)
                 {
                     var cells = playerRows[row].SelectNodes("th|td");
+                    if (cells.Count < 6 || cells[1].InnerText == "DWZ")
+                    {
+                        continue; 
+                    }
 
                     var dwz = int.TryParse(cells[1].InnerText, out var parsedDWZ) ? parsedDWZ : (int?)null;
                     var number = int.TryParse(cells[3].InnerText, out var parsedNumber) ? parsedNumber : (int?)null;
